@@ -1,0 +1,41 @@
+# Analysis configuration for WISE Clinical Camera.
+#
+# Build Specification section 6 ("establish linting") and section 96 (CI runs
+# `flutter analyze`). CI treats every diagnostic as fatal, so anything reported
+# here blocks a merge.
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # A photograph is clinical evidence. Silently dropping a Future that writes
+    # a file or commits a row is a data-loss bug, so it is an error here.
+    unawaited_futures: error
+    # Typed failures are the error contract (Build Specification section 90).
+    only_throw_errors: error
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_dynamic_calls
+    - avoid_slow_async_io
+    - cancel_subscriptions
+    - close_sinks
+    - directives_ordering
+    - prefer_final_locals
+    - prefer_relative_imports
+    - prefer_single_quotes
+    - require_trailing_commas
+    - sort_pub_dependencies: false
+    - test_types_in_equals
+    - throw_in_finally
+    - unawaited_futures
+    - unnecessary_lambdas
+    - unnecessary_parenthesis
+    - use_super_parameters
