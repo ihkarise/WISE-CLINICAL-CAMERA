@@ -134,6 +134,16 @@ class PhotoDetailScreen extends ConsumerWidget {
                           ref.invalidate(photoDetailProvider(photo));
                         },
                       ),
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.edit_outlined, size: 18),
+                        label: const Text('Measure and mark'),
+                        onPressed: () async {
+                          await Navigator.of(
+                            context,
+                          ).pushNamed(WiseRoutes.markup, arguments: photo);
+                          ref.invalidate(photoDetailProvider(photo));
+                        },
+                      ),
                       if (photo.type == PhotoType.before &&
                           data.afters.isNotEmpty)
                         FilledButton.icon(

@@ -106,15 +106,19 @@ class DeviceLevelService {
 
   /// Converts an accelerometer vector to roll and pitch.
   ///
-  /// With the device held upright in portrait, gravity lies along -y, so roll
-  /// is `atan2(x, -y)`. Exposed as a static so it can be tested directly
-  /// without a sensor.
+  /// The accelerometer reports proper acceleration including gravity, so a
+  /// stationary device held upright in portrait reads roughly (0, +g, 0):
+  /// +y points up the screen. Roll about the viewing axis is therefore
+  /// `atan2(x, y)`, which gives 0 upright and +90 in landscape.
+  ///
+  /// Exposed as a static so the arithmetic can be tested without a sensor,
+  /// which is where sign mistakes actually live.
   static LevelReading readingFrom(double x, double y, double z) {
     final magnitude = math.sqrt(x * x + y * y + z * z);
     // Free fall, or a sensor returning zeros: no meaningful orientation.
     if (magnitude < 1) return LevelReading.unavailable;
 
-    final roll = math.atan2(x, -y) * 180 / math.pi;
+    final roll = math.atan2(x, y) * 180 / math.pi;
     final pitch = math.atan2(-z, math.sqrt(x * x + y * y)) * 180 / math.pi;
 
     return LevelReading(

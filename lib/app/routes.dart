@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../features/annotation/markup_screen.dart';
 import '../features/calibration/calibration_screen.dart';
 import '../features/capture/capture_screen.dart';
 import '../features/cases/cases_screen.dart';
@@ -26,6 +27,7 @@ abstract final class WiseRoutes {
   static const String photoDetail = '/photo';
   static const String comparison = '/comparison';
   static const String calibration = '/calibration';
+  static const String markup = '/markup';
   static const String cases = '/cases';
   static const String protocols = '/protocols';
   static const String settings = '/settings';
@@ -76,6 +78,10 @@ Route<dynamic>? generateWiseRoute(RouteSettings settings) {
       final photo = settings.arguments;
       if (photo is! Photo) return null;
       page = CalibrationScreen(photo: photo);
+    case WiseRoutes.markup:
+      final photo = settings.arguments;
+      if (photo is! Photo) return null;
+      page = MarkupScreen(photo: photo);
     case WiseRoutes.cases:
       page = const CasesScreen();
     case WiseRoutes.protocols:

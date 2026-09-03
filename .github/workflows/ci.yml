@@ -1,0 +1,171 @@
+# CI for WISE Clinical Camera.
+#
+# Implements the checks Build Specification section 96 recommends:
+# format, analyze, unit/widget/integration tests, dependency audit, secret
+# scan, Android build, iOS build.
+#
+# Every diagnostic is fatal. A clinical photography application should not
+# accumulate "known" analyzer warnings.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: "3.35.5"
+
+jobs:
+  analyze:
+    name: Format, analyze and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Analyze
+        run: flutter analyze --fatal-infos --fatal-warnings
+
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage/lcov.info
+          if-no-files-found: warn
+
+  privacy-gates:
+    name: Privacy and security gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      # The P0 privacy suite is run as its own job so a failure is unmissable
+      # rather than buried among unrelated test output.
+      - name: Original immutability and network policy
+        run: flutter test test/privacy/
+
+      - name: Computer vision false-confidence suite
+        run: flutter test test/cv/
+
+      - name: End-to-end clinical workflow
+        run: flutter test test/integration/
+
+      # Privacy PRI-003: the core must make no network request. The Android
+      # manifest therefore declares no INTERNET permission, and that absence is
+      # checked here so it cannot be reintroduced without review.
+      - name: Assert no INTERNET permission is declared
+        run: |
+          # Matches a declaration, not a mention: the manifest carries a
+          # comment explaining why the permission is absent, and that comment
+          # must not trip its own check.
+          if grep -E '^[^<]*<uses-permission[^>]*android\.permission\.INTERNET' \
+              android/app/src/main/AndroidManifest.xml; then
+            echo "::error::INTERNET permission was added to the Android manifest."
+            echo "The core workflow must make no network request (Privacy PRI-003)."
+            echo "If an opt-in cloud feature genuinely needs it, update"
+            echo "docs/privacy/NETWORK_POLICY.md in the same change."
+            exit 1
+          fi
+          echo "No INTERNET permission declared."
+
+      # Build Specification section 70: never commit secrets.
+      #
+      # Matches assigned *values*, not bare identifiers. The logger and its
+      # test legitimately enumerate sensitive field names in order to redact
+      # them, and a scan that flagged those would be one everybody learns to
+      # ignore.
+      - name: Secret scan
+        run: |
+          set +e
+          ASSIGNED='(api[_-]?key|secret|password|passwd|token|credential|private[_-]?key)[a-zA-Z_]*\s*[:=]\s*.[A-Za-z0-9/+_-]{12,}'
+          MATERIAL='(BEGIN (RSA|EC|OPENSSH|PGP)? ?PRIVATE KEY|sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|Bearer [A-Za-z0-9._-]{20,})'
+          MATCHES=$(grep -rInE "$ASSIGNED|$MATERIAL" \
+            lib test android/app/src ios/Runner \
+            --include='*.dart' --include='*.xml' --include='*.plist' \
+            --include='*.kts' --include='*.gradle' \
+            | grep -vE '^\s*[^:]+:[0-9]+:\s*(//|///|\*)')
+          set -e
+          if [ -n "$MATCHES" ]; then
+            echo "::error::Possible secret committed:"
+            echo "$MATCHES"
+            exit 1
+          fi
+          echo "No secrets detected."
+
+      # Build Specification section 60: check dependency health.
+      - name: Dependency audit
+        run: |
+          flutter pub outdated --json > outdated.json || true
+          flutter pub deps --style=compact
+
+  build-android:
+    name: Android build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+
+  build-ios:
+    name: iOS build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      # No code signing in CI: this verifies the project compiles and links,
+      # which is the part that can regress silently.
+      - name: Build without code signing
+        run: flutter build ios --debug --no-codesign
