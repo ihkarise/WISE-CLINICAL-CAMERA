@@ -1,4 +1,3 @@
-import 'package:camera/camera.dart' as plugin;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,7 +5,7 @@ import '../../app/providers.dart';
 import '../../app/routes.dart';
 import '../../app/theme/wise_theme.dart';
 import '../../app/theme/wise_tokens.dart';
-import '../../core/camera/plugin_camera_engine.dart';
+import '../../core/camera/camera_preview_surface.dart';
 import '../../models/effective_settings.dart';
 import '../../models/enums.dart';
 import '../../shared/constants/wise_strings.dart';
@@ -144,34 +143,14 @@ class _CameraView extends ConsumerWidget {
 
 /// The live preview.
 ///
-/// Reads the plugin controller only when the production engine is in use, so
-/// a test running against `FakeCameraEngine` renders a placeholder instead of
-/// requiring a platform channel.
+/// Delegates to `CameraPreviewSurface`, which owns the platform boundary, so
+/// this screen imports no camera plugin (Technical Architecture section 4).
 class _PreviewSurface extends ConsumerWidget {
   const _PreviewSurface();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final engine = ref.watch(cameraEngineProvider);
-
-    if (engine is PluginCameraEngine) {
-      final controller = engine.controller;
-      if (controller != null && controller.value.isInitialized) {
-        return plugin.CameraPreview(controller);
-      }
-    }
-
-    return const ColoredBox(
-      color: WiseTokens.cameraSurface,
-      child: Center(
-        child: Icon(
-          Icons.photo_camera_outlined,
-          size: 48,
-          color: WiseTokens.slateGray,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context, WidgetRef ref) =>
+      CameraPreviewSurface(engine: ref.watch(cameraEngineProvider));
 }
 
 class _TopBar extends StatelessWidget {

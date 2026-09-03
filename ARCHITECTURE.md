@@ -34,8 +34,10 @@ Two rules hold this together (Data Model §65, Build Specification §102):
 
 1. **No widget touches SQLite or a camera plugin.** UI reads providers,
    providers expose repositories and engines.
-2. **`PluginCameraEngine` is the only file that imports `package:camera`.**
-   Everything platform-specific is contained there.
+2. **`package:camera` is imported only inside `lib/core/camera/`** — by
+   `PluginCameraEngine` and by `CameraPreviewSurface`, which owns the preview
+   widget so no feature screen needs the plugin. Everything platform-specific
+   is contained in that directory.
 
 The second rule is what makes the camera engine reusable by other WISE
 applications (Technical Architecture §57, master prompt Phase 54), and it is

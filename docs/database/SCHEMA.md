@@ -117,9 +117,14 @@ screen opens with a "recent, not deleted" query.
 UI  →  Controller  →  Repository  →  DatabaseService  →  SQLite
 ```
 
-`DatabaseService` is the only class that touches `sqflite`. No widget imports
-it. Repositories return `Result<T>` with a typed `Failure` rather than throwing
-(Data Model §65-66, Build Specification §102).
+`DatabaseService` is the only class that **opens or configures** a connection.
+Repositories use `sqflite`'s `Transaction` and `ConflictAlgorithm` types inside
+`DatabaseService.transaction`, which is what lets a multi-table write roll back
+as one unit (Data Model §43) — but they never open a database, set a pragma, or
+run a migration.
+
+No widget imports `sqflite` at all. Repositories return `Result<T>` with a typed
+`Failure` rather than throwing (Data Model §65-66, Build Specification §102).
 
 ---
 

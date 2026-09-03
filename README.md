@@ -119,9 +119,11 @@ UI  ->  Controller  ->  Repository  ->  DatabaseService  ->  SQLite
 UI  ->  Controller  ->  Repository  ->  ImageStorageService  ->  Filesystem
 ```
 
-No widget imports `sqflite` or a camera plugin. `PluginCameraEngine` is the
-only file that imports `package:camera`, which is what keeps the camera engine
-reusable by other WISE applications.
+No widget imports `sqflite` or a camera plugin. `package:camera` is imported
+only inside `lib/core/camera/` — by `PluginCameraEngine` and by
+`CameraPreviewSurface`, which owns the preview widget so the capture screen
+does not have to. That containment is what keeps the camera engine reusable by
+other WISE applications.
 
 Full detail: [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
