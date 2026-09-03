@@ -63,22 +63,31 @@ class Measurement {
   /// behaviour Testing section 24 checks: "the application must not invent a
   /// physical measurement".
   String get displayValue {
-    if (type.isAngular) return '${_format(pixelValue)}°';
+    if (type.isAngular) return '${formatAngle(pixelValue)}°';
     if (!hasPhysicalValue) {
       return type.isAreal
-          ? '${_format(pixelValue)} px²'
-          : '${_format(pixelValue)} px';
+          ? '${formatPixels(pixelValue)} px²'
+          : '${formatPixels(pixelValue)} px';
     }
     final symbol = type.isAreal ? unit!.areaSymbol : unit!.symbol;
-    return '${_format(value!)} $symbol';
+    return '${formatPhysical(value!)} $symbol';
   }
 
-  static String _format(double v) {
-    final abs = v.abs();
-    if (abs >= 1000) return v.toStringAsFixed(0);
-    if (abs >= 100) return v.toStringAsFixed(1);
-    return v.toStringAsFixed(2);
-  }
+  /// One decimal place, matching every worked example in the specifications
+  /// ("2.8 cm", "1.7 cm", "3.6 cm2", "4.2 cm").
+  ///
+  /// Deliberately not two decimals: a photographic measurement's accuracy
+  /// depends on calibration and capture geometry, so rendering hundredths would
+  /// assert a precision the method does not have (Build Specification section
+  /// 112). Values below 1 keep a second decimal because one would otherwise
+  /// lose most of the information.
+  static String formatPhysical(double v) =>
+      v.abs() < 1 ? v.toStringAsFixed(2) : v.toStringAsFixed(1);
+
+  /// Pixels are counts, so they are shown whole.
+  static String formatPixels(double v) => v.toStringAsFixed(0);
+
+  static String formatAngle(double v) => v.toStringAsFixed(1);
 
   Measurement copyWith({
     String? calibrationId,
