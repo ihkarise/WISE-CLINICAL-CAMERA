@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
 
 import '../errors/failures.dart';
 import '../errors/result.dart';
+import '../imaging/image_codec.dart';
 import '../logging/app_logger.dart';
 import 'checksum.dart';
 import 'storage_paths.dart';
@@ -64,7 +64,7 @@ class ImageStorageService {
     try {
       await paths.ensureCreated();
 
-      final decoded = img.decodeImage(bytes);
+      final decoded = ImageCodec.decode(bytes);
       if (decoded == null || decoded.width <= 0 || decoded.height <= 0) {
         return const Result.failed(
           UnreadableImage(technicalDetail: 'decode returned no image'),
@@ -150,7 +150,7 @@ class ImageStorageService {
         await directory.create(recursive: true);
       }
 
-      final decoded = img.decodeImage(bytes);
+      final decoded = ImageCodec.decode(bytes);
       if (decoded == null) {
         return const Result.failed(
           UnreadableImage(technicalDetail: 'derived asset failed to decode'),

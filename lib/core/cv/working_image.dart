@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:image/image.dart' as img;
+import '../imaging/image_codec.dart';
 
 /// A single-channel 8-bit image at CV working resolution.
 ///
@@ -60,7 +61,7 @@ class WorkingImage {
 
   /// Decodes bytes and converts in one step. Returns null if undecodable.
   static WorkingImage? fromBytes(Uint8List bytes, {int maxDimension = 320}) {
-    final decoded = img.decodeImage(bytes);
+    final decoded = ImageCodec.decode(bytes);
     if (decoded == null) return null;
     return WorkingImage.fromImage(decoded, maxDimension: maxDimension);
   }

@@ -31,9 +31,12 @@ class LightingStatistics {
     var highlights = 0;
     var shadows = 0;
     for (var value = 0; value < 256; value++) {
-      if (value >= config.highlightClipThreshold)
+      if (value >= config.highlightClipThreshold) {
         highlights += histogram[value];
-      if (value <= config.shadowClipThreshold) shadows += histogram[value];
+      }
+      if (value <= config.shadowClipThreshold) {
+        shadows += histogram[value];
+      }
     }
 
     return LightingStatistics(
