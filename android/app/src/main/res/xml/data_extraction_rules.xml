@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Clinical photographs and the WISE database are excluded from cloud backup and
+  from device-to-device transfer.
+
+  Privacy sections 51-52 require that a backup does not become an unaudited copy
+  of clinical images in a third-party cloud, and PRI-003 forbids images leaving
+  the device without an explicit feature and user authorization. Automatic
+  Android backup would be exactly that. A deliberate, user-controlled backup is
+  a separate future feature (Data Model section 58).
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

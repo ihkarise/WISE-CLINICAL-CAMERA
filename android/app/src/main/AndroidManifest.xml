@@ -1,8 +1,45 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Camera. Required to take a clinical photograph (Functional CAM-001). -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <!-- Photo library, requested only when the clinician explicitly imports a
+         reference or exports a copy. WISE originals live in application-private
+         storage and need no permission at all (Privacy sections 7-8, 10). -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"
+        android:minSdkVersion="33"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"/>
+
+    <!-- Explicit, user-initiated Gallery export on older Android only
+         (Functional SAV-002). Scoped storage makes it unnecessary from API 29. -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28"/>
+
+    <!-- No INTERNET permission is declared.
+         The core workflow makes no network request, and omitting the permission
+         makes that enforceable by the platform rather than only by convention
+         (Privacy PRI-003, Build Specification sections 72-73). A future release
+         that adds an opt-in cloud feature must add it deliberately, which is
+         exactly the visibility the privacy specification asks for. -->
+
+    <!-- The camera is required, not optional: without one the product has no
+         purpose. Declared so the Play Store filters incompatible devices. -->
+    <uses-feature android:name="android.hardware.camera" android:required="true"/>
+    <uses-feature android:name="android.hardware.camera.autofocus"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.flash"
+        android:required="false"/>
+    <uses-feature android:name="android.hardware.sensor.accelerometer"
+        android:required="false"/>
+
     <application
-        android:label="wise_clinical_camera"
+        android:label="WISE Clinical Camera"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:exported="true"
