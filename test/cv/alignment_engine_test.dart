@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wise_clinical_camera/core/cv/alignment_config.dart';
+import 'package:wise_clinical_camera/core/cv/alignment_engine.dart';
+import 'package:wise_clinical_camera/core/cv/alignment_result.dart';
 import 'package:wise_clinical_camera/core/cv/local_alignment_engine.dart';
 import 'package:wise_clinical_camera/models/enums.dart';
 
@@ -18,7 +20,7 @@ void main() {
     engine = LocalAlignmentEngine();
   });
 
-  Future<({dynamic reference, dynamic result})> runCase({
+  Future<({ReferenceFeatures reference, AlignmentResult result})> runCase({
     double translateX = 0,
     double translateY = 0,
     double rotationDegrees = 0,
@@ -49,7 +51,7 @@ void main() {
       frame: CvDataset.toWorking(transformed),
       reference: prepared.valueOrNull!,
     );
-    return (reference: prepared.valueOrNull, result: result);
+    return (reference: prepared.valueOrNull!, result: result);
   }
 
   group('ALG-T001 identical images', () {
