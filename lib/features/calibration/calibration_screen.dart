@@ -136,10 +136,16 @@ class _CalibrationScreenState extends ConsumerState<CalibrationScreen> {
 
                 if (_error != null) ...[
                   const SizedBox(height: WiseTokens.space8),
-                  Text(
-                    _error!,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: WiseTokens.warningRed,
+                  // A live region so a rejected calibration is announced, not
+                  // just recoloured — the red alone is invisible to a screen
+                  // reader and to a red-green colour deficiency (UX/UI 55).
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      _error!,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: WiseTokens.warningRed,
+                      ),
                     ),
                   ),
                 ],

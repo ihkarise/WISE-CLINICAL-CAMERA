@@ -517,14 +517,24 @@ class _OpacityControl extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Slider(
-              value: value.clamp(
-                EffectiveSettings.minOverlayOpacity,
-                EffectiveSettings.maxOverlayOpacity,
+            // A slider announces only its value ("50%") by default, which tells
+            // a screen-reader user nothing about what it controls. Name the
+            // control and phrase the value as words (UX/UI section 55).
+            child: MergeSemantics(
+              child: Semantics(
+                label: 'Reference opacity',
+                child: Slider(
+                  value: value.clamp(
+                    EffectiveSettings.minOverlayOpacity,
+                    EffectiveSettings.maxOverlayOpacity,
+                  ),
+                  min: EffectiveSettings.minOverlayOpacity,
+                  max: EffectiveSettings.maxOverlayOpacity,
+                  semanticFormatterCallback: (v) =>
+                      '${(v * 100).round()} percent',
+                  onChanged: onChanged,
+                ),
               ),
-              min: EffectiveSettings.minOverlayOpacity,
-              max: EffectiveSettings.maxOverlayOpacity,
-              onChanged: onChanged,
             ),
           ),
           IconButton(
