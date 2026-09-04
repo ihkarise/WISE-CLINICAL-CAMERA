@@ -108,6 +108,11 @@ class CaptureController extends StateNotifier<CaptureState> {
       await _prepareReference(state.reference!);
     }
 
+    // Record which protocol was in force, so the capture is attributable to
+    // the version it was taken under (Data Model section 11, Functional
+    // PRO-005).
+    state = state.copyWith(protocolId: ref.read(activeProtocolProvider)?.id);
+
     _startLevel();
     _startFrames();
 
@@ -259,6 +264,10 @@ class CaptureController extends StateNotifier<CaptureState> {
         alignment: state.alignment,
         lighting: state.lighting,
         focus: state.focus,
+        // Without this a protocol's `hardAlignmentThreshold` — the only block
+        // on capture the specification permits — never reaches the check that
+        // applies it, and a deliberately strict protocol is silently advisory.
+        protocol: ref.read(activeProtocolProvider)?.settings,
         referenceOrientation: state.reference?.captureRecipe?.orientation,
         // Without this the orientation comparison short-circuits on a null and
         // the check never runs at all.

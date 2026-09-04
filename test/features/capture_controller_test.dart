@@ -15,6 +15,7 @@ import 'package:wise_clinical_camera/core/permissions/permission_service.dart';
 import 'package:wise_clinical_camera/core/sensors/device_level_service.dart';
 import 'package:wise_clinical_camera/features/capture/capture_controller.dart';
 import 'package:wise_clinical_camera/features/capture/capture_state.dart';
+import 'package:wise_clinical_camera/models/capture_protocol.dart';
 import 'package:wise_clinical_camera/models/enums.dart';
 import 'package:wise_clinical_camera/models/photo.dart';
 import 'package:wise_clinical_camera/models/tool_overrides.dart';
@@ -422,6 +423,97 @@ void main() {
         isTrue,
         reason: 'a soft delete must not touch the original on disk',
       );
+    });
+  });
+
+  group('the active protocol', () {
+    CaptureProtocol protocolWith(ProtocolSettings settings) => CaptureProtocol(
+      id: 'protocol-1',
+      name: 'Strict wound series',
+      settings: settings,
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+    );
+
+    /// Drives an AFTER session whose frame does not match its reference, which
+    /// is the state a hard threshold exists to catch.
+    Future<CaptureController> mismatchedAfterSession() async {
+      final before = await seedPhoto();
+      final controller = controllerFor(
+        mode: PhotoType.after,
+        reference: before,
+      );
+      await controller.start();
+      camera.emitFrame(
+        frameOf(
+          CvDataset.toWorking(
+            CvDataset.flatScene(width: 160, height: 160),
+            maxDimension: 160,
+          ),
+        ),
+      );
+      await _settle();
+      return controller;
+    }
+
+    test('its hard threshold reaches the check that applies it', () async {
+      container.read(activeProtocolProvider.notifier).state = protocolWith(
+        const ProtocolSettings(hardAlignmentThreshold: 0.99),
+      );
+
+      final controller = await mismatchedAfterSession();
+
+      // The one block the specification permits, and it only works if the
+      // protocol's settings actually get to CaptureReadiness.
+      expect(controller.state.readiness?.canCapture, isFalse);
+      expect(controller.state.readiness?.blockedReason, isNotNull);
+    });
+
+    test('without a protocol nothing can block the shutter', () async {
+      final controller = await mismatchedAfterSession();
+
+      expect(
+        controller.state.readiness?.canCapture,
+        isTrue,
+        reason: 'a warning is advisory; only a configured protocol blocks',
+      );
+    });
+
+    test('a protocol with no threshold is still advisory only', () async {
+      container.read(activeProtocolProvider.notifier).state = protocolWith(
+        const ProtocolSettings(measurementRequired: true),
+      );
+
+      final controller = await mismatchedAfterSession();
+
+      expect(controller.state.readiness?.canCapture, isTrue);
+    });
+
+    test('its tools reach the settings precedence chain', () async {
+      container.read(activeProtocolProvider.notifier).state = protocolWith(
+        const ProtocolSettings(
+          tools: ToolOverrides(enabled: {WiseTool.grid: true}),
+        ),
+      );
+
+      final settings = container.read(effectiveSettingsProvider).valueOrNull!;
+
+      expect(settings.gridEnabled, isTrue);
+    });
+
+    test('the capture records which protocol was in force', () async {
+      container.read(activeProtocolProvider.notifier).state = protocolWith(
+        const ProtocolSettings(),
+      );
+      final controller = controllerFor(mode: PhotoType.photo);
+      await controller.start();
+
+      final photo = (await controller.capture()).valueOrNull!;
+
+      // Functional PRO-005: a photograph stays attributable to the protocol it
+      // was taken under.
+      expect(photo.protocolId, 'protocol-1');
+      expect(photo.captureRecipe?.protocolId, 'protocol-1');
     });
   });
 

@@ -20,6 +20,7 @@ import '../core/permissions/permission_service.dart';
 import '../core/sensors/device_level_service.dart';
 import '../core/storage/image_storage_service.dart';
 import '../core/storage/storage_paths.dart';
+import '../models/capture_protocol.dart';
 import '../models/effective_settings.dart';
 import '../models/tool_capabilities.dart';
 import '../models/tool_overrides.dart';
@@ -211,9 +212,20 @@ final sessionOverridesProvider = StateProvider<ToolOverrides>(
   (ref) => ToolOverrides.none,
 );
 
-/// The active protocol's tool block, if a protocol is selected.
-final activeProtocolOverridesProvider = StateProvider<ToolOverrides?>(
-  (ref) => null,
+/// The protocol selected for capture, if any.
+///
+/// The whole protocol rather than its tool block alone. Storing only the tools
+/// discarded everything else a protocol carries — the preferred orientation and
+/// flash, whether a measurement is required, the export preset, and
+/// `hardAlignmentThreshold`, which is the one mechanism the specification lets
+/// block capture at all. A protocol configured with that threshold was silently
+/// ignored, because the value never reached the code that checks it.
+final activeProtocolProvider = StateProvider<CaptureProtocol?>((ref) => null);
+
+/// The active protocol's tool block, which is the layer the settings precedence
+/// chain consumes.
+final activeProtocolOverridesProvider = Provider<ToolOverrides?>(
+  (ref) => ref.watch(activeProtocolProvider)?.settings.tools,
 );
 
 /// The resolved configuration for the current capture.

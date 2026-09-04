@@ -23,7 +23,7 @@ class ProtocolsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final protocols = ref.watch(protocolsProvider);
-    final active = ref.watch(activeProtocolOverridesProvider);
+    final active = ref.watch(activeProtocolProvider)?.settings.tools;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Protocols')),
@@ -55,10 +55,7 @@ class ProtocolsScreen extends ConsumerWidget {
                     groupValue: active == null ? null : 'active',
                     // ignore: deprecated_member_use
                     onChanged: (_) =>
-                        ref
-                                .read(activeProtocolOverridesProvider.notifier)
-                                .state =
-                            null,
+                        ref.read(activeProtocolProvider.notifier).state = null,
                     title: const Text('No protocol'),
                     subtitle: const Text('Use my saved defaults'),
                   ),
@@ -105,8 +102,7 @@ class _ProtocolTile extends ConsumerWidget {
       ),
       isThreeLine: true,
       onTap: () {
-        ref.read(activeProtocolOverridesProvider.notifier).state =
-            protocol.settings.tools;
+        ref.read(activeProtocolProvider.notifier).state = protocol;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${protocol.name} is active for capture.')),
         );
