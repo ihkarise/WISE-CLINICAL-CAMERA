@@ -1,0 +1,96 @@
+name: wise_clinical_camera
+description: >-
+  WISE Clinical Camera — a privacy-first, offline-first clinical photography
+  application that helps clinicians reproduce standardized photographs over time.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+# Dependency policy (Build Specification section 5, section 52 of the master
+# prompt): every entry below is justified in docs/architecture/DEPENDENCIES.md.
+# Nothing is added that Flutter/Dart or a platform API already provides, and no
+# package is added for the computer-vision stack — see SPECIFICATION_CONFLICTS
+# C-013.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management. Compile-safe, testable, and keeps persistent / session /
+  # processing / UI state clearly separated (Build Specification section 103).
+  flutter_riverpod: ^2.6.1
+
+  # Camera. The platform bridge behind core/camera/CameraEngine; no feature
+  # imports it directly (Build Specification section 11).
+  camera: ^0.11.0
+
+  # Local structured storage (Data Model section 2).
+  sqflite: ^2.4.1
+
+  # Application-private filesystem locations (Data Model section 3).
+  path_provider: ^2.1.5
+  path: ^1.9.0
+
+  # Pure-Dart image decode/encode. Used for thumbnails, derived assets, exports
+  # and the CV working image. Runs in tests without a device.
+  image: ^4.5.2
+
+  # Device orientation sensors for the level tool (Functional LVL-002).
+  sensors_plus: ^6.1.1
+
+  # SHA-256 checksums for original-file integrity (Data Model section 39).
+  crypto: ^3.0.6
+
+  # Stable globally unique identifiers (Data Model section 4).
+  uuid: ^4.5.1
+
+  # Contextual, least-privilege permission requests (Privacy sections 5-9).
+  permission_handler: ^11.3.1
+
+  # Reference import from the device gallery. Uses the platform photo picker,
+  # which needs no broad gallery permission on modern Android/iOS (Privacy 8).
+  image_picker: ^1.1.2
+
+  # Reference import from Files/documents (Functional MOD-002).
+  file_selector: ^1.0.3
+
+  # Explicit, user-initiated gallery export only (Functional SAV-002).
+  gal: ^2.3.1
+
+  # User-initiated share sheet for exports (Privacy section 44).
+  share_plus: ^10.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+  # Runs the real SQLite engine on the test host so database migrations and
+  # repositories are tested for real, not mocked (Data Model section 74).
+  sqflite_common_ffi: ^2.3.4
+
+flutter:
+  uses-material-design: true
+  # No `assets:` block. The five system protocols are seeded from
+  # `ProtocolRepository.systemProtocolTemplates()`, not loaded from a file, and
+  # nothing in the application reads from the asset bundle at all. Declaring an
+  # `assets/protocols/` directory that never had anything in it made `flutter
+  # analyze --fatal-warnings` fail on any fresh clone, because git does not
+  # track an empty directory.
+  # Poppins is the specified primary font (UX/UI section 3). The font files were
+  # not supplied with the repository; see SPECIFICATION_CONFLICTS C-015. The
+  # theme declares the family with the specified fallback chain, so the app
+  # renders correctly on the platform default until the files are dropped in
+  # here. google_fonts is deliberately NOT used: it fetches over the network at
+  # runtime, which would breach the offline-first and network policy rules.
+  # fonts:
+  #   - family: Poppins
+  #     fonts:
+  #       - asset: assets/fonts/Poppins-Regular.ttf
+  #       - asset: assets/fonts/Poppins-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/Poppins-SemiBold.ttf
+  #         weight: 600
+  #       - asset: assets/fonts/Poppins-Bold.ttf
+  #         weight: 700

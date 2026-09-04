@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Wise Clinical Camera</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>WISE Clinical Camera</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<!-- Permission purpose strings. iOS requires these; each says specifically
+	     what the access is for, which is also what the UX specification asks
+	     for (UX/UI section 7, Privacy sections 6-7). -->
+	<key>NSCameraUsageDescription</key>
+	<string>WISE needs camera access to take clinical photographs.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow WISE to import a Before photograph from your library. WISE never reads your library unless you choose an image.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Allow WISE to save a photograph to your device Gallery when you choose to.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>WISE uses device orientation to show the level and tilt guide.</string>
+
+	<!-- No microphone permission: the camera is configured without audio. -->
+
+	<!-- App Transport Security is left at its secure default. The core workflow
+	     makes no network request at all (Privacy sections 28, 31). No exception
+	     domains are declared, so a future network feature must be added
+	     deliberately rather than inheriting a loosened policy. -->
+
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+</dict>
+</plist>

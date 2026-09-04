@@ -1,0 +1,127 @@
+import 'dart:typed_data';
+
+import '../../models/enums.dart';
+import '../errors/result.dart';
+import 'camera_capabilities.dart';
+
+/// One preview frame, at preview resolution.
+///
+/// Carries raw luminance rather than an encoded image so the CV layer can build
+/// a `WorkingImage` without a decode step in the frame loop.
+class CameraFrame {
+  const CameraFrame({
+    required this.width,
+    required this.height,
+    required this.luminance,
+    required this.timestamp,
+    this.rotationDegrees = 0,
+  });
+
+  final int width;
+  final int height;
+
+  /// Single-channel 8-bit luminance, `width * height` bytes.
+  final Uint8List luminance;
+
+  final DateTime timestamp;
+
+  /// Rotation needed to bring the frame upright, used for the orientation
+  /// normalisation CV section 9 requires.
+  final int rotationDegrees;
+}
+
+/// A full-resolution capture, before it is stored.
+class CapturedImage {
+  const CapturedImage({
+    required this.bytes,
+    required this.orientation,
+    this.mimeType = 'image/jpeg',
+  });
+
+  final Uint8List bytes;
+
+  /// Device orientation at the moment of capture.
+  ///
+  /// Recorded into the capture recipe so an AFTER can be guided back to the
+  /// same orientation (Functional CAM-005, Data Model section 11).
+  final CaptureOrientation orientation;
+
+  final String mimeType;
+
+  /// Pixel dimensions are deliberately **not** carried here.
+  ///
+  /// A camera's preview resolution is not its still-capture resolution, and on
+  /// Android the preview is frequently reported in sensor (landscape)
+  /// orientation regardless of how the device is held. Copying a preview size
+  /// onto a captured still would put a plausible but wrong number into a
+  /// clinical record, which is exactly what Build Specification section 12 and
+  /// Technical Architecture section 6 warn against.
+  ///
+  /// Dimensions are established by decoding the actual bytes in
+  /// `ImageStorageService.storeOriginal`, which is also where they are
+  /// verified before any row is committed.
+  static const String dimensionsNote =
+      'Dimensions are read from the encoded bytes at storage time.';
+}
+
+/// The platform-independent camera interface (Build Specification section 11,
+/// Technical Architecture section 5).
+///
+/// No feature screen imports a camera plugin. Everything goes through this, for
+/// three reasons the specifications give:
+///
+/// - iOS and Android camera behaviour differs and must not leak into feature
+///   code (Technical Architecture section 4)
+/// - the camera engine should be reusable by other WISE applications
+///   (Technical Architecture section 57, master prompt Phase 54)
+/// - a fake implementation makes the capture workflow testable without a device
+abstract class CameraEngine {
+  /// Capabilities detected at initialisation. [CameraCapabilities.none] before.
+  CameraCapabilities get capabilities;
+
+  bool get isInitialized;
+
+  /// The camera currently in use, or null before initialisation.
+  CameraDescription? get activeCamera;
+
+  /// The device orientation the camera is currently reporting.
+  ///
+  /// Used for the capture recipe and for the orientation comparison that leads
+  /// the guidance priority order (Computer Vision section 33).
+  CaptureOrientation get currentOrientation;
+
+  Future<Result<void>> initialize({CameraPosition? preferred});
+
+  Future<void> dispose();
+
+  /// Preview frames for the CV layer.
+  ///
+  /// Sampled rather than exhaustive: the engine may drop frames to keep the
+  /// preview smooth, which CV sections 56-57 explicitly prefer over maintaining
+  /// CV throughput.
+  Stream<CameraFrame> get frames;
+
+  Future<Result<CapturedImage>> capture();
+
+  /// Sets zoom. Values outside the supported range are clamped rather than
+  /// rejected, so a protocol written for one device does not fail on another.
+  Future<Result<void>> setZoom(double value);
+
+  double get currentZoom;
+
+  Future<Result<void>> setFlashMode(WiseFlashMode mode);
+
+  WiseFlashMode get currentFlashMode;
+
+  /// Focuses at a normalised point (0-1 in each axis). Returns
+  /// [CameraCapabilityUnsupported] where the platform has no such control.
+  Future<Result<void>> setFocusPoint(double x, double y);
+
+  Future<Result<void>> setExposurePoint(double x, double y);
+
+  Future<Result<void>> switchCamera(CameraPosition position);
+
+  /// Whatever camera metadata the platform reports. Absent keys mean the
+  /// device did not report the value (Data Model section 13).
+  Future<Map<String, Object?>> readMetadata();
+}
