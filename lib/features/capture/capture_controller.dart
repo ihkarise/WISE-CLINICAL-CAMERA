@@ -288,8 +288,10 @@ class CaptureController extends StateNotifier<CaptureState> {
         referenceOrientation: state.reference?.captureRecipe?.orientation,
         // The protocol may prefer an orientation even without a reference
         // (Functional PRO-002); advisory only.
-        preferredOrientation:
-            ref.read(activeProtocolProvider)?.settings.preferredOrientation,
+        preferredOrientation: ref
+            .read(activeProtocolProvider)
+            ?.settings
+            .preferredOrientation,
         // Without this the orientation comparison short-circuits on a null and
         // the check never runs at all.
         currentOrientation: _camera.currentOrientation,

@@ -136,9 +136,9 @@ class _CaseFilterRow extends ConsumerWidget {
                             ),
                           ),
                       ],
-                      onChanged: (value) => ref
-                          .read(referenceCaseFilterProvider.notifier)
-                          .state = value,
+                      onChanged: (value) =>
+                          ref.read(referenceCaseFilterProvider.notifier).state =
+                              value,
                     ),
                   ),
                 ],

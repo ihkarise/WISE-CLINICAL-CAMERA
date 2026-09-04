@@ -240,9 +240,7 @@ class MarkupController extends StateNotifier<MarkupState> {
     return _transformSelected((geometry) => geometry.scaled(factor));
   }
 
-  Future<void> _transformSelected(
-    Geometry Function(Geometry) transform,
-  ) async {
+  Future<void> _transformSelected(Geometry Function(Geometry) transform) async {
     final id = state.selectedId;
     if (id == null) return;
     final repository = await ref.read(clinicalRepositoryProvider.future);

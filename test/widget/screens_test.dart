@@ -436,16 +436,17 @@ void main() {
         () => Scaffold(body: ExportSheet(photo: photo)),
         prepare: () async {
           photo = await addPhoto();
-          container.read(activeProtocolProvider.notifier).state =
-              CaptureProtocol(
-                id: 'p1',
-                name: 'Wound series',
-                settings: const ProtocolSettings(
-                  exportPreset: ExportPreset.measured,
-                ),
-                createdAt: DateTime(2026),
-                updatedAt: DateTime(2026),
-              );
+          container
+              .read(activeProtocolProvider.notifier)
+              .state = CaptureProtocol(
+            id: 'p1',
+            name: 'Wound series',
+            settings: const ProtocolSettings(
+              exportPreset: ExportPreset.measured,
+            ),
+            createdAt: DateTime(2026),
+            updatedAt: DateTime(2026),
+          );
         },
       );
 

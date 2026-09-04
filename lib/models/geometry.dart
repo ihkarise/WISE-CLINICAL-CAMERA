@@ -82,9 +82,7 @@ class Geometry {
   /// Every point shifted by (dx, dy) in image pixels. A rigid move: it changes
   /// position but not length or area (Functional ANN-003 move).
   Geometry translated(double dx, double dy) => Geometry(
-    points
-        .map((p) => ImagePoint(p.x + dx, p.y + dy))
-        .toList(growable: false),
+    points.map((p) => ImagePoint(p.x + dx, p.y + dy)).toList(growable: false),
     closed: closed,
   );
 

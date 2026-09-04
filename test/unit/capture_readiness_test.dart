@@ -217,17 +217,20 @@ void main() {
       expect(readiness.warnings, isEmpty);
     });
 
-    test('a preferred orientation is not repeated when a reference pins it', () {
-      // The reference already warns; the protocol preference must not add a
-      // second, near-identical warning for the same orientation.
-      final readiness = CaptureReadiness.evaluate(
-        referenceOrientation: CaptureOrientation.landscape,
-        preferredOrientation: CaptureOrientation.landscape,
-        currentOrientation: CaptureOrientation.portrait,
-      );
+    test(
+      'a preferred orientation is not repeated when a reference pins it',
+      () {
+        // The reference already warns; the protocol preference must not add a
+        // second, near-identical warning for the same orientation.
+        final readiness = CaptureReadiness.evaluate(
+          referenceOrientation: CaptureOrientation.landscape,
+          preferredOrientation: CaptureOrientation.landscape,
+          currentOrientation: CaptureOrientation.portrait,
+        );
 
-      expect(readiness.warnings, hasLength(1));
-    });
+        expect(readiness.warnings, hasLength(1));
+      },
+    );
 
     test('good alignment with no warnings reads as ready', () {
       final readiness = CaptureReadiness.evaluate(

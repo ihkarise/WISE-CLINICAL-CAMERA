@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wise_clinical_camera/app/providers.dart';
 import 'package:wise_clinical_camera/app/routes.dart';
 import 'package:wise_clinical_camera/app/theme/wise_theme.dart';
+import 'package:wise_clinical_camera/features/cases/cases_screen.dart';
 import 'package:wise_clinical_camera/features/library/photo_thumbnail.dart';
 import 'package:wise_clinical_camera/features/reference/reference_picker_screen.dart';
 import 'package:wise_clinical_camera/models/enums.dart';
@@ -61,7 +62,10 @@ void main() {
 
   Future<String> addCase(String title) async {
     final cases = await container.read(caseRepositoryProvider.future);
-    return (await cases.createCase(userId: userId, title: title)).valueOrNull!.id;
+    return (await cases.createCase(
+      userId: userId,
+      title: title,
+    )).valueOrNull!.id;
   }
 
   Future<void> show(
