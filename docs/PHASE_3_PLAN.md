@@ -231,18 +231,26 @@ commits on `claude/phase-3-planning-audit-0f2iu8`:
 
 | Item | Requirement | Status | Commit subject |
 |---|---|---|---|
-| A1 capture metadata | MOD-012, MOD-030 | `IMPL — CI PENDING` | `feat(capture): clinical metadata workflow` |
-| A2 library filtering | MOD-030 | `IMPL — CI PENDING` | `feat(library): body-part filter control` |
-| A3 case linking | CAS-001..003 | `IMPL — CI PENDING` | `feat(library): link a photograph to a case after capture` |
-| A4 reference sources | MOD-002 | `IMPL — CI PENDING` | `feat(reference): file import and case reference sources` |
-| A5 markup editing | ANN-003 | `IMPL — CI PENDING` | `feat(annotation): select, move, resize and edit committed markup` |
-| A6 protocol reading | PRO-001..003 | `IMPL — CI PENDING` | `feat(protocols): read the protocol capture and export preferences` |
+| A1 capture metadata | MOD-012, MOD-030 | `DONE` | `feat(capture): clinical metadata workflow` |
+| A2 library filtering | MOD-030 | `DONE` | `feat(library): body-part filter control` |
+| A3 case linking | CAS-001..003 | `DONE` | `feat(library): link a photograph to a case after capture` |
+| A4 reference sources | MOD-002 | `DONE` | `feat(reference): file import and case reference sources` |
+| A5 markup editing | ANN-003 | `DONE` | `feat(annotation): select, move, resize and edit committed markup` |
+| A6 protocol reading | PRO-001..003 | `DONE` | `feat(protocols): read the protocol capture and export preferences` |
 
-`IMPL — CI PENDING` is used deliberately in place of `DONE`: the tests were
-written but **could not be run in this session** (no Flutter toolchain), so
-nothing has been observed to pass. The Phase 3 pull request's CI run is the
-validation step. Work stream B (accessibility coverage) and any remaining B/C
-items are not yet started.
+All six are `DONE`: validated by the PR
+[#3](https://github.com/ihkarise/WISE-CLINICAL-CAMERA/pull/3) CI run on commit
+`10076c6` — all five jobs green (Format/analyze/test with **548 tests**,
+Privacy gates, Android build, iOS build, Linux build) and reproduced locally on
+the pinned toolchain (Flutter 3.35.5 / Dart 3.9.2). Two format/import fixes
+(`e299d43`, `10076c6`) were needed after the first CI run and are folded in.
+
+**Work stream B partial outcome:** B1 (make the Android/iOS/Linux CI build jobs
+actually run) is achieved — all three executed green on a real runner for the
+first time, closing the "no build has ever run" release blocker (compilation
+only; device validation still open). B2 (broader accessibility coverage) and B3
+(coverage tracking — now 76.8%) remain as follow-ups. Work stream C
+(hardware/dataset/decision items) is unchanged.
 
 ## 6. Non-goals (from `PROJECT_STATUS.md` §18)
 

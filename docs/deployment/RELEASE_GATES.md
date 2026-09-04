@@ -9,20 +9,22 @@ the strength of the code looking right.
 
 | | |
 |---|---|
-| Commit | `289f257` (the last Phase 2 commit that changes code) |
+| Commit | `10076c6` (Phase 3 work stream A) |
 | Date | 2026-09-04 |
 | Toolchain | Flutter 3.35.5 stable · Dart 3.9.2 |
-| Suite | **524 tests, 0 failures** |
-| Coverage | **77.6% lines (4576/5900)** |
+| Suite | **548 tests, 0 failures** |
+| Coverage | **76.8% lines (4758/6195)** |
 
 > **Phase 3 note (2026-09-04).** Phase 3 work stream A added clinician-facing
 > workflow (capture metadata, library filtering, case linking, file/case
 > reference sources, markup editing, protocol preference reading) with new
-> automated tests. The table above still reflects the Phase 2 measurement:
-> the Phase 3 session had **no Flutter toolchain**, so no gate could be
-> re-run and the test count and coverage are unchanged pending the Phase 3
-> CI run. The build/analyze/test/privacy gates below are validated by CI on
-> the Phase 3 pull request; the six hardware/dataset blockers are unchanged.
+> automated tests. All five CI jobs passed on commit `10076c6` in pull request
+> [#3](https://github.com/ihkarise/WISE-CLINICAL-CAMERA/pull/3) — Format/
+> analyze/test, Privacy gates, **Android build**, **iOS build** and Linux
+> build — and the checks were reproduced locally on the pinned toolchain. The
+> Android and iOS build gates below therefore move from BLOCKED to PASS. This
+> is compilation evidence only: real-device, camera, permission, performance
+> and clinical-CV validation remain open.
 
 ## Status vocabulary
 
@@ -39,16 +41,18 @@ the strength of the code looking right.
 
 | Status | Count |
 |---|---:|
-| PASS | 24 |
+| PASS | 26 |
 | PARTIAL | 6 |
-| BLOCKED — ENVIRONMENT | 6 |
+| BLOCKED — ENVIRONMENT | 4 |
 | DEFERRED | 1 |
 | FAIL | 0 |
 
 **V1 is not releasable.** No gate fails, and none is blocked by missing code.
-Six are blocked on hardware and SDKs that are unobtainable in this environment,
-and the CV thresholds are unvalidated against real clinical images. Those are
-the blockers, and they are inputs rather than work.
+The Android and iOS builds now compile in CI, so the "no build has ever run"
+blocker is cleared; four gates remain blocked on hardware unobtainable in this
+environment (real camera, permission flows, device performance) and the CV
+thresholds are unvalidated against real clinical images. Those are the
+blockers, and they are inputs rather than work.
 
 ---
 
@@ -60,8 +64,8 @@ the blockers, and they are inputs rather than work.
 | Formatting clean | **PASS** | CI job `analyze` | `dart format --set-exit-if-changed lib test` | Yes |
 | Full test suite green | **PASS** | `524 tests, All tests passed!` | `flutter test` | Yes |
 | Release AOT compilation | **PASS** | `flutter build linux --release` produced a 7.6 MB `libapp.so` | `flutter build linux --release` | Yes |
-| Android build | **BLOCKED — ENVIRONMENT** | `dl.google.com` returns 403 CONNECT through the agent proxy; the Android SDK cannot be installed here | CI job `build-android` on a runner with the SDK | **Yes** |
-| iOS build | **BLOCKED — ENVIRONMENT** | No macOS host | CI job `build-ios` on a macOS runner | **Yes** |
+| Android build | **PASS** | CI job `build-android` succeeded on commit `10076c6` (PR #3), producing a debug APK | `flutter build apk --debug` on an Ubuntu runner with the Android SDK | Yes — compilation only; device validation still pending |
+| iOS build | **PASS** | CI job `build-ios` succeeded on commit `10076c6` (PR #3) | `flutter build ios --debug --no-codesign` on a macOS runner | Yes — compilation only; device validation still pending |
 
 `flutter test` runs the Dart VM in JIT and would not catch a release-only
 compilation failure, which is why the Linux release build is a gate in its own
@@ -144,17 +148,13 @@ plugin registrant. See `linux/README.md`.
 
 ## What actually blocks release
 
-Three things, none of them code.
+Two things now, neither of them code. (The former blocker #1 — "no build has
+ever run for Android or iOS" — is cleared: the `build-android` and `build-ios`
+CI jobs both passed on commit `10076c6` in PR #3, so Gradle configuration,
+plugin registration and pod integration compile and link. That is compilation
+evidence, not device evidence; the two blockers below stand.)
 
-**1. No build has ever run for Android or iOS.** Gradle configuration, plugin
-registration and pod integration all fail in ways static analysis cannot see.
-The CI jobs exist and are written; they have never executed on a runner with
-the toolchains. Until they do, "it compiles" is an assumption.
-
-*To close:* run CI on an Ubuntu runner with the Android SDK and a macOS runner
-with Xcode.
-
-**2. No photograph has ever been taken with a real camera.** The entire capture
+**1. No photograph has ever been taken with a real camera.** The entire capture
 path is verified against `FakeCameraEngine`. That proves the orchestration —
 and it found real defects — but it says nothing about a real sensor's
 orientation reporting, its still resolution, its focus behaviour, or how any of
@@ -162,7 +162,7 @@ it degrades on a mid-range Android device.
 
 *To close:* `docs/testing/DEVICE_TEST_PLAN.md`, D-CAM and D-PRM.
 
-**3. No clinical image has been through the alignment pipeline.** Every CV
+**2. No clinical image has been through the alignment pipeline.** Every CV
 threshold in `AlignmentConfig` and `QualityConfig` is provisional. CV §78 is
 explicit that they must be established experimentally, and the synthetic
 dataset — even with the hair, dressing, shadow, movement and gamma analogues
@@ -182,7 +182,7 @@ tracks feature survival rather than alignment correctness.
 
 | Input | Consequence |
 |---|---|
-| Android SDK, Xcode, real devices | Six gates unverifiable |
+| Real devices (Android + iOS) | Camera, sensor, permission and performance gates unverifiable; the CI builds compile but no device has run the app |
 | Governed clinical dataset | CV thresholds cannot be validated; no accuracy figure may be published |
 | Design system source | Radii, elevation, gradients and icons are inferred from what the UX/UI specification quotes (C-014) |
 | Logo, icon, splash, Poppins files | The application renders on platform defaults (C-015) |
@@ -193,5 +193,6 @@ Build Specification §114 requires, before moving on: P0 tests pass, no critical
 data-loss issue, no original-image corruption, no unexpected network upload, no
 unresolved build failure.
 
-The first four hold and are enforced by CI. The fifth now holds for release AOT
-compilation on Linux, and remains unasserted for Android and iOS.
+The first four hold and are enforced by CI. The fifth — no unresolved build
+failure — now holds for Linux release AOT compilation and for the Android and
+iOS debug builds, all green in the Phase 3 CI run (`10076c6`, PR #3).

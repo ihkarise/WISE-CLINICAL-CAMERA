@@ -1006,15 +1006,20 @@ The above verification has been performed and recorded in
 The Phase 3 scope, sequence and Definition-of-Done posture are in
 [`docs/PHASE_3_PLAN.md`](PHASE_3_PLAN.md).
 
-**Work stream A implemented (same session).** After the plan, the six
-clinician-facing gaps were implemented with tests, in focused commits — capture
-metadata (MOD-012, MOD-030), library filtering (MOD-030), case linking
-(CAS-001..003), file/case reference sources (MOD-002), markup editing
-(ANN-003) and protocol preference reading (PRO-001..003). Because this session
-has no Flutter toolchain, they are recorded as `IMPL — CI PENDING` in
-[`REQUIREMENTS_TRACEABILITY.md`](REQUIREMENTS_TRACEABILITY.md), not `DONE`: the
-Phase 3 pull request's CI run is the validation. See
-[`PHASE_3_PLAN.md`](PHASE_3_PLAN.md) §5.4.
+**Work stream A implemented and software-validated (same session).** After the
+plan, the six clinician-facing gaps were implemented with tests, in focused
+commits — capture metadata (MOD-012, MOD-030), library filtering (MOD-030),
+case linking (CAS-001..003), file/case reference sources (MOD-002), markup
+editing (ANN-003) and protocol preference reading (PRO-001..003). They are now
+`DONE` in [`REQUIREMENTS_TRACEABILITY.md`](REQUIREMENTS_TRACEABILITY.md),
+validated by the pull request
+[#3](https://github.com/ihkarise/WISE-CLINICAL-CAMERA/pull/3) CI run on commit
+`10076c6` — all five jobs green (Format/analyze/test with 548 tests, Privacy
+gates, Android build, iOS build, Linux build) and reproduced locally on the
+pinned toolchain. **Scope:** this is software validation. The Android/iOS
+**build** jobs prove compilation only; real-device, camera, permission,
+performance and clinical-CV validation remain open, and the project stays
+**NOT RELEASE READY**. See [`PHASE_3_PLAN.md`](PHASE_3_PLAN.md) §5.4.
 
 ---
 
@@ -1312,18 +1317,18 @@ At the end of every major phase:
 | UI foundation                      | Implemented                                    |
 | Library                            | Implemented with remaining workflow validation |
 | Before/After concept               | Implemented foundation                         |
-| Complete clinical capture workflow | Phase 3 — metadata/case wired, IMPL — CI PENDING |
-| Body part workflow                 | Phase 3 — implemented, IMPL — CI PENDING       |
-| Laterality workflow                | Phase 3 — implemented, IMPL — CI PENDING       |
-| Case linking workflow              | Phase 3 — implemented, IMPL — CI PENDING       |
+| Complete clinical capture workflow | Implemented; software-validated (Phase 3, PR #3 CI green) |
+| Body part workflow                 | Implemented; software-validated (Phase 3)      |
+| Laterality workflow                | Implemented; software-validated (Phase 3)      |
+| Case linking workflow              | Implemented; software-validated (Phase 3)      |
 | Recipe inheritance                 | Implemented (Phase 2)                          |
-| Real camera validation             | Pending                                        |
-| Real clinical-image CV validation  | Pending                                        |
-| Android validation                 | Environment dependent                          |
-| iOS validation                     | Environment dependent                          |
-| Linux release build                | Previously verified                            |
-| Automated tests                    | 524 at Phase 2 report                          |
-| Coverage                           | 77.6% at Phase 2 report                        |
+| Real camera validation             | Pending (device)                               |
+| Real clinical-image CV validation  | Pending (dataset)                              |
+| Android build                      | Compiles in CI (Phase 3, PR #3); device validation pending |
+| iOS build                          | Compiles in CI (Phase 3, PR #3); device validation pending |
+| Linux release build                | Verified (Phase 3 CI + local, 7.4 MB libapp.so) |
+| Automated tests                    | 548 passing (Phase 3, PR #3 CI `10076c6`)      |
+| Coverage                           | 76.8% lines (4758/6195), Phase 3 CI            |
 | Production readiness               | NOT RELEASE READY                              |
 
 ---
