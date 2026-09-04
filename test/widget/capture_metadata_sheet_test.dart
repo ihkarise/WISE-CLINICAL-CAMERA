@@ -73,11 +73,13 @@ void main() {
 
     await tester.tap(find.byType(DropdownButton<BodyPart?>));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Hand').last);
+    // The opened menu is a lazy list, so pick a body part near the top that is
+    // built and on-screen without scrolling (Face is the first category).
+    await tester.tap(find.text('Face').last);
     await tester.pumpAndSettle();
 
     expect(fired, isTrue);
-    expect(received, BodyPart.hand);
+    expect(received, BodyPart.face);
   });
 
   testWidgets('offers "not recorded" so the field stays optional', (

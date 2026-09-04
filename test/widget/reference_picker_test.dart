@@ -93,7 +93,9 @@ void main() {
     expect(find.text('Import from File'), findsOneWidget);
   });
 
-  testWidgets('a case filter appears only once a case exists', (tester) async {
+  testWidgets('no case filter is shown when there are no cases', (
+    tester,
+  ) async {
     await show(
       tester,
       prepare: () async {
@@ -101,18 +103,20 @@ void main() {
         await container.read(referenceCandidatesProvider.future);
       },
     );
-    expect(find.text('All cases'), findsNothing);
 
+    expect(find.text('All cases'), findsNothing);
+  });
+
+  testWidgets('a case filter appears once a case exists', (tester) async {
     await show(
       tester,
       prepare: () async {
         await addCase('Wrist series');
-        // casesProvider resolved to empty during the first pump; re-read it.
-        container.invalidate(casesProvider);
         await container.read(casesProvider.future);
         await container.read(referenceCandidatesProvider.future);
       },
     );
+
     expect(find.text('All cases'), findsWidgets);
   });
 
