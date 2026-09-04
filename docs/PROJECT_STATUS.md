@@ -1006,6 +1006,16 @@ The above verification has been performed and recorded in
 The Phase 3 scope, sequence and Definition-of-Done posture are in
 [`docs/PHASE_3_PLAN.md`](PHASE_3_PLAN.md).
 
+**Work stream A implemented (same session).** After the plan, the six
+clinician-facing gaps were implemented with tests, in focused commits — capture
+metadata (MOD-012, MOD-030), library filtering (MOD-030), case linking
+(CAS-001..003), file/case reference sources (MOD-002), markup editing
+(ANN-003) and protocol preference reading (PRO-001..003). Because this session
+has no Flutter toolchain, they are recorded as `IMPL — CI PENDING` in
+[`REQUIREMENTS_TRACEABILITY.md`](REQUIREMENTS_TRACEABILITY.md), not `DONE`: the
+Phase 3 pull request's CI run is the validation. See
+[`PHASE_3_PLAN.md`](PHASE_3_PLAN.md) §5.4.
+
 ---
 
 # 26. PHASE 3 DEFINITION OF DONE
@@ -1302,11 +1312,11 @@ At the end of every major phase:
 | UI foundation                      | Implemented                                    |
 | Library                            | Implemented with remaining workflow validation |
 | Before/After concept               | Implemented foundation                         |
-| Complete clinical capture workflow | Phase 3 work                                   |
-| Body part workflow                 | Phase 3                                        |
-| Laterality workflow                | Phase 3                                        |
-| Case linking workflow              | Phase 3                                        |
-| Recipe inheritance                 | Phase 3                                        |
+| Complete clinical capture workflow | Phase 3 — metadata/case wired, IMPL — CI PENDING |
+| Body part workflow                 | Phase 3 — implemented, IMPL — CI PENDING       |
+| Laterality workflow                | Phase 3 — implemented, IMPL — CI PENDING       |
+| Case linking workflow              | Phase 3 — implemented, IMPL — CI PENDING       |
+| Recipe inheritance                 | Implemented (Phase 2)                          |
 | Real camera validation             | Pending                                        |
 | Real clinical-image CV validation  | Pending                                        |
 | Android validation                 | Environment dependent                          |

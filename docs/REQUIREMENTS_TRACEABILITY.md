@@ -10,6 +10,7 @@ data rules, mapped to the module that implements it and the test that proves it.
 |---|---|
 | `DONE` | Implemented and covered by an automated test that runs in CI. |
 | `DONE (device)` | Implemented against a platform API; correctness needs hardware. See [C-017](SPECIFICATION_CONFLICTS.md#c-017--device-and-platform-verification--missing-input-environment). |
+| `IMPL — CI PENDING` | Implemented in Phase 3 with automated tests added, but **not yet validated**: the Phase 3 session had no Flutter toolchain, so `flutter test` could not run locally. Becomes `DONE` when the Phase 3 CI run is green. |
 | `PARTIAL` | Implemented to the extent the specification defines; a documented gap remains. |
 | `DEFERRED` | Explicitly out of V1 scope by a specification. |
 
@@ -22,11 +23,15 @@ Priorities are from Functional Specification §50 and Data Model §76.
 `flutter analyze` clean; 77.6% line coverage.** Every module and test path in
 the table below was checked to exist in the tree.
 
+Counts as of the Phase 2 re-verification, with the Phase 3 reclassification of
+six rows applied:
+
 | Status | Count | Meaning |
 |---|---:|---|
-| `DONE` | 68 | Implemented and covered by a CI test |
+| `DONE` | 68 | Implemented and covered by a CI test (Phase 2 figure) |
 | `DONE (device)` | 15 | Implemented; correctness needs hardware |
-| `PARTIAL` | 8 | Implemented to the extent specified; a documented gap remains |
+| `IMPL — CI PENDING` | 6 | Phase 3: implemented with tests; awaiting the Phase 3 CI run |
+| `PARTIAL` | 2 | Implemented to the extent specified; a documented gap remains (ALG-002, CAL-003) |
 | `DEFERRED` | 1 | Explicitly out of V1 scope (AI tiers 2-4) |
 
 **Six rows were downgraded from `DONE` to `PARTIAL` in the Phase 2
@@ -36,6 +41,22 @@ in almost all of them is the same and worth stating once: the model, the
 repository and the query layer support the capability, and no screen provides a
 way to use it. A row like that reads as complete from the database's point of
 view and is not complete from a clinician's.
+
+## Phase 3 update (2026-09-04)
+
+Phase 3 work stream A closed the clinician-facing gap in all six of those
+rows: the capture metadata workflow (MOD-012, MOD-030), library body-part
+filtering (MOD-030), case linking after capture (CAS-001..003), the file and
+case reference sources (MOD-002), committed-markup editing (ANN-003), and
+reading the protocol capture/export preferences (PRO-001..003). Each carries
+new automated tests.
+
+These rows are marked **`IMPL — CI PENDING`** rather than `DONE`: the Phase 3
+session had **no Flutter toolchain**, so the tests were written but could not
+be run locally (`flutter analyze`/`flutter test` were unavailable). The
+Phase 3 pull request's CI run is the validation step; when it is green these
+rows become `DONE` and the counts below are revised. Nothing here has been
+observed to pass, and nothing is claimed to.
 
 The `DONE (device)` rows are the honest limit of this environment: no Android
 SDK, no Xcode, no device. See
@@ -75,16 +96,16 @@ SDK, no Xcode, no device. See
 | Req | Description | Priority | Module | Status | Test |
 |---|---|---|---|---|---|
 | MOD-001 | BEFORE starts reference-capture workflow | P0 | `features/capture/capture_controller.dart` | `DONE` | `test/widget/home_screen_test.dart` |
-| MOD-002 | AFTER requires a reference; five sources | P0 | `features/reference/reference_picker_screen.dart` | `PARTIAL` | `test/widget/screen_smoke_test.dart` — WISE library, device Gallery and recent Before images exist. **Files and case are not implemented**: there is no file picker, and no photograph is ever attached to a case (see CAS) |
+| MOD-002 | AFTER requires a reference; five sources | P0 | `features/reference/reference_picker_screen.dart` | `IMPL — CI PENDING` | `test/widget/reference_picker_test.dart` — Phase 3 adds a Files source (via `file_selector`) and a case filter. WISE library, Gallery, recent Before and now Files and case are all present |
 | MOD-003 | PHOTO standalone capture | P0 | `features/capture/capture_controller.dart` | `DONE` | `test/widget/home_screen_test.dart` |
 | MOD-010 | Before capture workflow | P0 | `features/capture/capture_controller.dart` | `DONE` | `test/integration/clinical_workflow_test.dart` |
 | MOD-011 | Before becomes reference-eligible; unique ID | P0 | `repositories/photo_repository.dart` | `DONE` | `test/database/photo_repository_test.dart` |
-| MOD-012 | Before metadata optional | P0 | `features/capture/capture_controller.dart` | `PARTIAL` | `test/features/capture_controller_test.dart` — the controller carries metadata onto the stored row, but `setMetadata` **has no caller anywhere in the application**, so in practice every photograph is captured with body part, laterality and case all null |
+| MOD-012 | Before metadata optional | P0 | `features/capture/capture_metadata_sheet.dart`, `features/capture/capture_controller.dart` | `IMPL — CI PENDING` | `test/widget/capture_metadata_sheet_test.dart`, `test/features/capture_controller_test.dart` — Phase 3 adds a pre-capture "Details" sheet wiring `setMetadata`; every field stays optional and can be cleared |
 | MOD-020 | Select reference before AFTER camera | P0 | `features/reference/reference_picker_screen.dart` | `DONE` | `test/widget/home_screen_test.dart` |
 | MOD-021 | Reference preparation loads image/metadata/transform/calibration/protocol | P0 | `features/capture/capture_controller.dart` | `DONE` | `test/integration/clinical_workflow_test.dart` |
 | MOD-022 | AFTER camera shows live feed + overlay + alignment | P0 | `features/capture/capture_controller.dart`, `features/overlay/ghost_overlay.dart` | `DONE (device)` | `test/widget/home_screen_test.dart` |
 | MOD-023 | Capture possible despite non-critical warnings | P0 | `features/capture/capture_readiness.dart` | `DONE` | `test/unit/capture_readiness_test.dart`, `test/features/capture_controller_test.dart` — a flat, featureless frame still permits the shutter, and a protocol's hard threshold refuses it |
-| MOD-030 | Body part, 18 categories | P1 | `models/enums.dart` | `PARTIAL` | `test/unit/measurement_test.dart` — the 18 categories exist, persist, and are filterable in `getPhotos`; **no screen sets one**, so the library's body-part filter can never match |
+| MOD-030 | Body part, 18 categories | P1 | `features/capture/capture_metadata_sheet.dart`, `features/library/library_screen.dart` | `IMPL — CI PENDING` | `test/widget/capture_metadata_sheet_test.dart`, `test/widget/screens_test.dart` — Phase 3 lets capture set a body part and the library filter by one, so the filter now matches |
 
 ## REF / OVR — Reference & ghost overlay
 
@@ -136,7 +157,7 @@ SDK, no Xcode, no device. See
 | Req | Description | Priority | Module | Status | Test |
 |---|---|---|---|---|---|
 | ANN-001..002 | Eight annotation tools | P2 | `features/annotation/markup_controller.dart` | `DONE` | `test/features/markup_controller_test.dart`, `test/imaging/markup_rendering_test.dart` |
-| ANN-003 | Select / move / resize / edit / delete / hide | P2 | `features/annotation/markup_controller.dart` | `PARTIAL` | `test/features/markup_controller_test.dart` — **delete and hide only**. `selectedId` exists in the state but nothing ever sets it, and there is no move, resize or edit of a committed shape |
+| ANN-003 | Select / move / resize / edit / delete / hide | P2 | `features/annotation/markup_controller.dart`, `features/annotation/markup_screen.dart` | `IMPL — CI PENDING` | `test/features/markup_controller_test.dart` — Phase 3 adds select, move, resize and text edit of a committed shape (a move preserves a measurement's value, a resize recomputes it), all non-destructive; delete and hide already existed |
 | ANN-004 | Non-destructive | P0 | `core/imaging/layer_renderer.dart` | `DONE` | `test/privacy/original_immutability_test.dart`, `test/features/markup_controller_test.dart` — the original's checksum is unchanged by a full edit session |
 | ANN-010 | Layer visibility control | P2 | `core/imaging/layer_stack.dart` | `DONE` | `test/privacy/original_immutability_test.dart` |
 | ANN-011 | Export layer selection | P2 | `features/export/export_service.dart` | `DONE` | `test/integration/clinical_workflow_test.dart` |
@@ -164,10 +185,10 @@ SDK, no Xcode, no device. See
 | Req | Description | Priority | Module | Status | Test |
 |---|---|---|---|---|---|
 | SET-001..004 | Defaults, persistence, override, save-as-default | P0 | `features/settings/settings_screen.dart` | `DONE` | `test/unit/effective_settings_test.dart`, `test/features/capture_controller_test.dart` — including that a session override reaches the settings chain and never the database |
-| PRO-001..003 | Create / configure / activate protocol | P3 | `features/protocols/protocols_screen.dart` | `PARTIAL` | `test/database/persistence_roundtrip_test.dart`, `test/features/capture_controller_test.dart` — creation, versioning, activation, the tool block and `hardAlignmentThreshold` all work. `preferredOrientation`, `preferredFlash`, `measurementRequired` and `exportPreset` round-trip correctly and **nothing reads them** |
+| PRO-001..003 | Create / configure / activate protocol | P3 | `features/protocols/protocols_screen.dart`, `features/capture/capture_controller.dart`, `features/export/export_sheet.dart` | `IMPL — CI PENDING` | `test/features/capture_controller_test.dart`, `test/unit/capture_readiness_test.dart`, `test/widget/screens_test.dart` — Phase 3 reads all four preferences: `preferredFlash` sets the camera, `measurementRequired` and `preferredOrientation` become advisories (never blocking, C-018), `exportPreset`/`exportFooter` drive the export sheet |
 | PRO-004 | Precedence: capability → default → protocol → session | P0 | `models/effective_settings.dart` | `DONE` | `test/unit/effective_settings_test.dart` |
 | PRO-005 | Protocol versioning; history not rewritten | P3 | `repositories/protocol_repository.dart` | `DONE` | `test/database/persistence_roundtrip_test.dart` — an edit bumps the version, and retiring a protocol leaves historical captures still naming it |
-| CAS-001..003 | Optional cases, attach, contents | P3 | `features/cases/cases_screen.dart` | `PARTIAL` | `test/database/persistence_roundtrip_test.dart` — a case can be created, listed and deleted (its photographs correctly survive as uncategorised). **Attaching a photograph to a case has no entry point**, so no case ever has contents |
+| CAS-001..003 | Optional cases, attach, contents | P3 | `features/cases/cases_screen.dart`, `features/library/photo_detail_screen.dart` | `IMPL — CI PENDING` | `test/widget/screens_test.dart`, `test/database/photo_repository_test.dart` — Phase 3 adds "Add to case" / "Change case" from photo detail (and case selection at capture), so a case can hold photographs; deleting a case still leaves them |
 
 ## PRI / OFF — Privacy & offline
 

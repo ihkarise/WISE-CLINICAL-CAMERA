@@ -9,11 +9,20 @@ the strength of the code looking right.
 
 | | |
 |---|---|
-| Commit | `289f257` (the last commit that changes code) |
+| Commit | `289f257` (the last Phase 2 commit that changes code) |
 | Date | 2026-09-04 |
 | Toolchain | Flutter 3.35.5 stable · Dart 3.9.2 |
 | Suite | **524 tests, 0 failures** |
 | Coverage | **77.6% lines (4576/5900)** |
+
+> **Phase 3 note (2026-09-04).** Phase 3 work stream A added clinician-facing
+> workflow (capture metadata, library filtering, case linking, file/case
+> reference sources, markup editing, protocol preference reading) with new
+> automated tests. The table above still reflects the Phase 2 measurement:
+> the Phase 3 session had **no Flutter toolchain**, so no gate could be
+> re-run and the test count and coverage are unchanged pending the Phase 3
+> CI run. The build/analyze/test/privacy gates below are validated by CI on
+> the Phase 3 pull request; the six hardware/dataset blockers are unchanged.
 
 ## Status vocabulary
 
