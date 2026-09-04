@@ -10,6 +10,7 @@ import '../../core/cv/working_image.dart';
 import '../../core/imaging/image_codec.dart';
 import '../../models/photo.dart';
 import '../../shared/constants/wise_strings.dart';
+import '../../shared/widgets/clinical_image.dart';
 
 /// The visual difference view (Functional CMP-005, UX/UI section 39,
 /// Build Specification section 42).
@@ -50,7 +51,11 @@ class DifferenceView extends ConsumerWidget {
             ),
             data: (bytes) => bytes == null
                 ? const Center(child: Text('A difference view is unavailable.'))
-                : Image.memory(bytes, fit: BoxFit.contain),
+                : ClinicalImage.memory(
+                    bytes,
+                    semanticLabel:
+                        'Visual difference between the two photographs',
+                  ),
           ),
         ),
 

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,6 +7,7 @@ import '../../models/enums.dart';
 import '../../models/geometry.dart';
 import '../../models/photo.dart';
 import '../../shared/constants/wise_strings.dart';
+import '../../shared/widgets/clinical_image.dart';
 
 /// Establishing the image scale (UX/UI sections 29-30, Functional
 /// CAL-002..006, Build Specification sections 35-36).
@@ -63,13 +62,7 @@ class _CalibrationScreenState extends ConsumerState<CalibrationScreen> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.file(
-                      File(widget.photo.originalPath),
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stack) => const Center(
-                        child: Icon(Icons.broken_image_outlined),
-                      ),
-                    ),
+                    ClinicalImage.file(widget.photo.originalPath),
                     if (_start != null)
                       CustomPaint(
                         painter: _CalibrationLinePainter(

@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../../models/reference_transform.dart';
+import '../../shared/widgets/clinical_image.dart';
 
 /// The reference image drawn over the live camera preview.
 ///
@@ -52,12 +51,10 @@ class GhostOverlay extends StatelessWidget {
             1,
             1,
           ),
-        child: Image.file(
-          File(imagePath),
-          fit: BoxFit.contain,
-          // A missing reference must not crash the camera.
-          errorBuilder: (context, error, stack) => const SizedBox.shrink(),
-        ),
+        // Bounded decode: this sits on top of a live camera preview that is
+        // already holding buffers, so a full-resolution reference is the worst
+        // possible place to spend memory.
+        child: ClinicalImage.file(imagePath),
       ),
     );
 

@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../../app/theme/wise_tokens.dart';
 import '../../models/enums.dart';
 import '../../models/photo.dart';
+import '../../shared/widgets/clinical_image.dart';
 
 /// A photograph in a list or grid.
 ///
@@ -47,22 +46,13 @@ class PhotoThumbnail extends StatelessWidget {
                 borderRadius: BorderRadius.circular(WiseTokens.controlRadius),
                 child: Stack(
                   children: [
-                    Image.file(
-                      File(path),
+                    SizedBox(
                       width: size,
                       height: size,
-                      fit: BoxFit.cover,
-                      // A missing file shows a placeholder rather than
-                      // crashing the library (Build Specification section 92).
-                      errorBuilder: (context, error, stack) => Container(
-                        width: size,
-                        height: size,
-                        color: WiseTokens.lightGray,
-                        child: const Icon(
-                          Icons.broken_image_outlined,
-                          color: WiseTokens.slateGray,
-                        ),
-                      ),
+                      // The library falls back to the original when a
+                      // thumbnail is missing, so the decode must still be
+                      // bounded (Data Model section 70).
+                      child: ClinicalImage.file(path, fit: BoxFit.cover),
                     ),
                     if (showBadge)
                       Positioned(

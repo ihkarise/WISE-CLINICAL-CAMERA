@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,6 +8,7 @@ import '../../models/enums.dart';
 import '../../models/geometry.dart';
 import '../../models/photo.dart';
 import '../../shared/constants/wise_strings.dart';
+import '../../shared/widgets/clinical_image.dart';
 import 'markup_controller.dart';
 import 'markup_painter.dart';
 
@@ -71,13 +70,7 @@ class _MarkupScreenState extends ConsumerState<MarkupScreen> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.file(
-                        File(widget.photo.originalPath),
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stack) => const Center(
-                          child: Icon(Icons.broken_image_outlined),
-                        ),
-                      ),
+                      ClinicalImage.file(widget.photo.originalPath),
                       CustomPaint(
                         painter: MarkupPainter(
                           measurements: state.measurements,

@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../../app/theme/wise_tokens.dart';
 import '../../models/enums.dart';
 import '../../shared/constants/wise_strings.dart';
+import '../../shared/widgets/clinical_image.dart';
 import '../../shared/widgets/wise_status_chip.dart';
 import 'capture_state.dart';
 
@@ -36,15 +35,9 @@ class CaptureReviewSheet extends StatelessWidget {
             padding: const EdgeInsets.all(WiseTokens.space16),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(WiseTokens.controlRadius),
-              child: Image.file(
-                File(photo.originalPath),
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stack) => const Center(
-                  child: Icon(
-                    Icons.broken_image_outlined,
-                    color: WiseTokens.slateGray,
-                  ),
-                ),
+              child: ClinicalImage.file(
+                photo.originalPath,
+                semanticLabel: 'Captured photograph, under review',
               ),
             ),
           ),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,6 +9,7 @@ import '../../models/enums.dart';
 import '../../models/measurement.dart';
 import '../../models/photo.dart';
 import '../../shared/constants/wise_strings.dart';
+import '../../shared/widgets/clinical_image.dart';
 import '../export/export_sheet.dart';
 
 /// Everything known about one photograph.
@@ -69,11 +68,11 @@ class PhotoDetailScreen extends ConsumerWidget {
           children: [
             AspectRatio(
               aspectRatio: photo.aspectRatio,
-              child: Image.file(
-                File(photo.originalPath),
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stack) =>
-                    const Center(child: Icon(Icons.broken_image_outlined)),
+              child: ClinicalImage.file(
+                photo.originalPath,
+                semanticLabel:
+                    '${photo.type.wireName} photograph, '
+                    '${photo.widthPx} by ${photo.heightPx} pixels',
               ),
             ),
 

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +8,7 @@ import '../../app/routes.dart';
 import '../../app/theme/wise_tokens.dart';
 import '../../models/enums.dart';
 import '../../models/measurement.dart';
+import '../../shared/widgets/clinical_image.dart';
 import 'difference_view.dart';
 import 'measurement_change_table.dart';
 
@@ -302,11 +302,5 @@ class _Photo extends StatelessWidget {
   final String path;
 
   @override
-  Widget build(BuildContext context) => Image.file(
-    File(path),
-    fit: BoxFit.contain,
-    errorBuilder: (context, error, stack) => const Center(
-      child: Icon(Icons.broken_image_outlined, color: WiseTokens.slateGray),
-    ),
-  );
+  Widget build(BuildContext context) => ClinicalImage.file(path);
 }
