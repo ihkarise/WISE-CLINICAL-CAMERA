@@ -116,20 +116,30 @@ class _CaseFilterRow extends ConsumerWidget {
                 children: [
                   Text('Case', style: Theme.of(context).textTheme.labelMedium),
                   const SizedBox(width: WiseTokens.space8),
-                  DropdownButton<String?>(
-                    value: list.any((c) => c.id == selected) ? selected : null,
-                    hint: const Text('All cases'),
-                    items: [
-                      const DropdownMenuItem<String?>(child: Text('All cases')),
-                      for (final record in list)
-                        DropdownMenuItem<String?>(
-                          value: record.id,
-                          child: Text(record.displayTitle),
+                  Expanded(
+                    child: DropdownButton<String?>(
+                      isExpanded: true,
+                      value: list.any((c) => c.id == selected)
+                          ? selected
+                          : null,
+                      hint: const Text('All cases'),
+                      items: [
+                        const DropdownMenuItem<String?>(
+                          child: Text('All cases'),
                         ),
-                    ],
-                    onChanged: (value) => ref
-                        .read(referenceCaseFilterProvider.notifier)
-                        .state = value,
+                        for (final record in list)
+                          DropdownMenuItem<String?>(
+                            value: record.id,
+                            child: Text(
+                              record.displayTitle,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                      ],
+                      onChanged: (value) => ref
+                          .read(referenceCaseFilterProvider.notifier)
+                          .state = value,
+                    ),
                   ),
                 ],
               ),

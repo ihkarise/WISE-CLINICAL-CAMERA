@@ -109,7 +109,10 @@ class CaptureMetadataSheet extends ConsumerWidget {
                     for (final record in list)
                       DropdownMenuItem<String?>(
                         value: record.id,
-                        child: Text(record.displayTitle),
+                        child: Text(
+                          record.displayTitle,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                   ],
                   onChanged: onCaseChanged,
