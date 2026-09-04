@@ -101,18 +101,34 @@ class MarkupState {
 /// original image is never opened for writing from here; the editor has no code
 /// path that could (PRD section 33, Privacy PRI-004).
 class MarkupController extends StateNotifier<MarkupState> {
-  MarkupController({required this.ref, required Photo photo})
+  MarkupController({required this.ref, required this.photo})
     : super(MarkupState(photo: photo));
 
   final Ref ref;
 
+  /// Held outside the state so it stays readable during teardown, when the
+  /// state itself is no longer safe to touch.
+  final Photo photo;
+
   /// Loads existing markup and any calibration.
   Future<void> load() async {
+    final photoId = photo.id;
     final repository = await ref.read(clinicalRepositoryProvider.future);
+
+    // Read everything first, then write once. The editor is opened from a
+    // list, and a clinician who taps a photograph and immediately goes back
+    // disposes this controller while these reads are still in flight —
+    // touching `state` after that throws. Awaiting inside the copyWith
+    // argument list would put the writes back on the wrong side of the check.
+    final calibration = await repository.getCalibrationFor(photoId);
+    final measurements = await repository.getMeasurements(photoId);
+    final annotations = await repository.getAnnotations(photoId);
+
+    if (!mounted) return;
     state = state.copyWith(
-      calibration: await repository.getCalibrationFor(state.photo.id),
-      measurements: await repository.getMeasurements(state.photo.id),
-      annotations: await repository.getAnnotations(state.photo.id),
+      calibration: calibration,
+      measurements: measurements,
+      annotations: annotations,
     );
   }
 
@@ -138,6 +154,7 @@ class MarkupController extends StateNotifier<MarkupState> {
 
     try {
       final repository = await ref.read(clinicalRepositoryProvider.future);
+      if (!mounted) return;
 
       switch (state.tool) {
         case MeasurementTool(:final type):
@@ -155,7 +172,7 @@ class MarkupController extends StateNotifier<MarkupState> {
           );
 
           final saved = await repository.saveMeasurement(measurement);
-          if (saved.isOk) {
+          if (saved.isOk && mounted) {
             state = state.copyWith(
               measurements: [...state.measurements, measurement],
             );
@@ -177,7 +194,7 @@ class MarkupController extends StateNotifier<MarkupState> {
           );
 
           final saved = await repository.saveAnnotation(annotation);
-          if (saved.isOk) {
+          if (saved.isOk && mounted) {
             state = state.copyWith(
               annotations: [...state.annotations, annotation],
             );
@@ -187,16 +204,19 @@ class MarkupController extends StateNotifier<MarkupState> {
           break;
       }
     } finally {
-      state = state.copyWith(
-        pendingPoints: const <ImagePoint>[],
-        saving: false,
-      );
+      if (mounted) {
+        state = state.copyWith(
+          pendingPoints: const <ImagePoint>[],
+          saving: false,
+        );
+      }
     }
   }
 
   /// Hides an object without deleting it (Functional MES-008, ANN-003).
   Future<void> toggleVisibility(String id) async {
     final repository = await ref.read(clinicalRepositoryProvider.future);
+    if (!mounted) return;
 
     final measurementIndex = state.measurements.indexWhere((m) => m.id == id);
     if (measurementIndex >= 0) {
@@ -205,6 +225,7 @@ class MarkupController extends StateNotifier<MarkupState> {
         updatedAt: DateTime.now(),
       );
       await repository.updateMeasurement(updated);
+      if (!mounted) return;
       final list = [...state.measurements]..[measurementIndex] = updated;
       state = state.copyWith(measurements: list);
       return;
@@ -217,6 +238,7 @@ class MarkupController extends StateNotifier<MarkupState> {
         updatedAt: DateTime.now(),
       );
       await repository.updateAnnotation(updated);
+      if (!mounted) return;
       final list = [...state.annotations]..[annotationIndex] = updated;
       state = state.copyWith(annotations: list);
     }
@@ -224,9 +246,11 @@ class MarkupController extends StateNotifier<MarkupState> {
 
   Future<void> delete(String id) async {
     final repository = await ref.read(clinicalRepositoryProvider.future);
+    if (!mounted) return;
 
     if (state.measurements.any((m) => m.id == id)) {
       await repository.deleteMeasurement(id);
+      if (!mounted) return;
       state = state.copyWith(
         measurements: state.measurements.where((m) => m.id != id).toList(),
         clearSelection: true,
@@ -236,6 +260,7 @@ class MarkupController extends StateNotifier<MarkupState> {
 
     if (state.annotations.any((a) => a.id == id)) {
       await repository.deleteAnnotation(id);
+      if (!mounted) return;
       state = state.copyWith(
         annotations: state.annotations.where((a) => a.id != id).toList(),
         clearSelection: true,
@@ -250,6 +275,7 @@ class MarkupController extends StateNotifier<MarkupState> {
   /// without the clinician replacing a single point (Data Model section 21).
   Future<void> applyCalibration(Calibration calibration) async {
     final repository = await ref.read(clinicalRepositoryProvider.future);
+    if (!mounted) return;
     final updated = <Measurement>[];
 
     for (final measurement in state.measurements) {
@@ -261,6 +287,7 @@ class MarkupController extends StateNotifier<MarkupState> {
       updated.add(recalculated);
     }
 
+    if (!mounted) return;
     state = state.copyWith(calibration: calibration, measurements: updated);
   }
 }

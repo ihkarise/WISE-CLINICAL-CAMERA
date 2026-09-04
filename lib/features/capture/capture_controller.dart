@@ -82,6 +82,7 @@ class CaptureController extends StateNotifier<CaptureState> {
     );
 
     final permission = await _permissions.requestCamera();
+    if (!mounted) return;
     if (permission.isFailure) {
       state = state.copyWith(
         phase: CapturePhase.error,
@@ -91,6 +92,7 @@ class CaptureController extends StateNotifier<CaptureState> {
     }
 
     final initialized = await _camera.initialize();
+    if (!mounted) return;
     if (initialized.isFailure) {
       state = state.copyWith(
         phase: CapturePhase.error,
@@ -116,6 +118,7 @@ class CaptureController extends StateNotifier<CaptureState> {
     _startLevel();
     _startFrames();
 
+    if (!mounted) return;
     state = state.copyWith(phase: CapturePhase.previewing);
     _recomputeReadiness();
   }
@@ -136,6 +139,7 @@ class CaptureController extends StateNotifier<CaptureState> {
 
     final storage = await ref.read(imageStorageProvider.future);
     final bytes = await storage.readBytes(reference.originalPath);
+    if (!mounted) return;
     if (bytes.isFailure) {
       // A missing reference does not end the session: PHOTO-style capture is
       // still possible, and the user is told (Functional REF-T003).
@@ -157,6 +161,7 @@ class CaptureController extends StateNotifier<CaptureState> {
       imageBytes: _referenceBytes!,
     );
 
+    if (!mounted) return;
     if (prepared.isOk) {
       _referenceFeatures = prepared.valueOrNull;
     } else {
@@ -337,14 +342,20 @@ class CaptureController extends StateNotifier<CaptureState> {
 
     final captured = await _camera.capture();
     if (captured.isFailure) {
-      state = state.copyWith(
-        phase: CapturePhase.previewing,
-        failure: captured.failureOrNull,
-      );
+      if (mounted) {
+        state = state.copyWith(
+          phase: CapturePhase.previewing,
+          failure: captured.failureOrNull,
+        );
+      }
       return Result.failed(captured.failureOrNull!);
     }
 
-    state = state.copyWith(phase: CapturePhase.processing);
+    // From here the shutter has fired. If the screen goes away mid-flight the
+    // photograph must still be stored — a capture the clinician cannot repeat
+    // is not something to abandon because nobody is watching — so the writes
+    // continue and only the state updates are skipped.
+    if (mounted) state = state.copyWith(phase: CapturePhase.processing);
 
     final repository = await ref.read(photoRepositoryProvider.future);
     final user = await ref.read(currentUserProvider.future);
@@ -363,10 +374,12 @@ class CaptureController extends StateNotifier<CaptureState> {
     );
 
     if (created.isFailure) {
-      state = state.copyWith(
-        phase: CapturePhase.previewing,
-        failure: created.failureOrNull,
-      );
+      if (mounted) {
+        state = state.copyWith(
+          phase: CapturePhase.previewing,
+          failure: created.failureOrNull,
+        );
+      }
       return created;
     }
 
@@ -377,10 +390,12 @@ class CaptureController extends StateNotifier<CaptureState> {
     await _recordQualityChecks(photo);
 
     final finalised = await repository.getPhoto(photo.id) ?? photo;
-    state = state.copyWith(
-      phase: CapturePhase.reviewing,
-      capturedPhoto: finalised,
-    );
+    if (mounted) {
+      state = state.copyWith(
+        phase: CapturePhase.reviewing,
+        capturedPhoto: finalised,
+      );
+    }
     return Result.ok(finalised);
   }
 
@@ -514,6 +529,7 @@ class CaptureController extends StateNotifier<CaptureState> {
       final repository = await ref.read(photoRepositoryProvider.future);
       await repository.deletePhoto(photo.id, force: true);
     }
+    if (!mounted) return;
     state = state.copyWith(
       phase: CapturePhase.previewing,
       clearCapturedPhoto: true,
