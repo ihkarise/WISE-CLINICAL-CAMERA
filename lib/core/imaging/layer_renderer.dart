@@ -11,6 +11,7 @@ import '../errors/failures.dart';
 import '../errors/result.dart';
 import 'image_codec.dart';
 import 'layer_stack.dart';
+import 'markup_geometry.dart';
 
 /// Renders a [LayerStack] onto a **copy** of the original.
 ///
@@ -339,17 +340,23 @@ class LayerRenderer {
     img.Color colour,
     int thickness,
   ) {
-    final angle = math.atan2(to.y - from.y, to.x - from.x);
-    final length = math.max(10, thickness * 4).toDouble();
-    const spread = 0.5;
+    // Shared with MarkupPainter so the arrow written here and the arrow the
+    // clinician drew are the same shape.
+    final barbs = ArrowHead.barbs(
+      fromX: from.x * s,
+      fromY: from.y * s,
+      toX: to.x * s,
+      toY: to.y * s,
+      strokeWidth: thickness.toDouble(),
+    );
 
-    for (final offset in [angle - spread, angle + spread]) {
+    for (final barb in barbs) {
       img.drawLine(
         canvas,
         x1: (to.x * s).round(),
         y1: (to.y * s).round(),
-        x2: (to.x * s - length * math.cos(offset)).round(),
-        y2: (to.y * s - length * math.sin(offset)).round(),
+        x2: barb.x.round(),
+        y2: barb.y.round(),
         color: colour,
         thickness: thickness,
       );

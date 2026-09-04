@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/theme/wise_tokens.dart';
+import '../../core/imaging/markup_geometry.dart';
 import '../../models/annotation.dart';
 import '../../models/enums.dart';
 import '../../models/geometry.dart';
@@ -148,12 +149,18 @@ class MarkupPainter extends CustomPainter {
   }
 
   void _paintArrowHead(Canvas canvas, Offset from, Offset to, Paint paint) {
-    final angle = (to - from).direction;
-    const spread = 0.5;
-    final length = paint.strokeWidth * 4;
+    // Shared with LayerRenderer so the arrow drawn here and the arrow written
+    // into an export are the same shape.
+    final barbs = ArrowHead.barbs(
+      fromX: from.dx,
+      fromY: from.dy,
+      toX: to.dx,
+      toY: to.dy,
+      strokeWidth: paint.strokeWidth,
+    );
 
-    for (final offset in [angle - spread, angle + spread]) {
-      canvas.drawLine(to, to - Offset.fromDirection(offset, length), paint);
+    for (final barb in barbs) {
+      canvas.drawLine(to, Offset(barb.x, barb.y), paint);
     }
   }
 
