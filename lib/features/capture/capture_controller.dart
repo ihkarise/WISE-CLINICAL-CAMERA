@@ -314,16 +314,28 @@ class CaptureController extends StateNotifier<CaptureState> {
 
   // --- Metadata -------------------------------------------------------------
 
+  /// Records the optional clinical context for this capture.
+  ///
+  /// Every field is optional (Functional MOD-012): a photograph is captured
+  /// with body part, laterality and case all null unless the clinician sets
+  /// them. Passing a `clear…` flag resets that field back to unset, which the
+  /// value-only path cannot express.
   void setMetadata({
     BodyPart? bodyPart,
     Laterality? laterality,
     String? caseId,
     String? protocolId,
+    bool clearBodyPart = false,
+    bool clearLaterality = false,
+    bool clearCase = false,
   }) => state = state.copyWith(
     bodyPart: bodyPart,
     laterality: laterality,
     caseId: caseId,
     protocolId: protocolId,
+    clearBodyPart: clearBodyPart,
+    clearLaterality: clearLaterality,
+    clearCase: clearCase,
   );
 
   // --- Capture --------------------------------------------------------------

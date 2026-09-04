@@ -102,6 +102,9 @@ class CaptureState {
     bool clearFailure = false,
     bool clearCapturedPhoto = false,
     bool clearAlignment = false,
+    bool clearBodyPart = false,
+    bool clearLaterality = false,
+    bool clearCase = false,
   }) => CaptureState(
     mode: mode,
     phase: phase ?? this.phase,
@@ -117,9 +120,9 @@ class CaptureState {
         ? null
         : (capturedPhoto ?? this.capturedPhoto),
     failure: clearFailure ? null : (failure ?? this.failure),
-    bodyPart: bodyPart ?? this.bodyPart,
-    laterality: laterality ?? this.laterality,
-    caseId: caseId ?? this.caseId,
+    bodyPart: clearBodyPart ? null : (bodyPart ?? this.bodyPart),
+    laterality: clearLaterality ? null : (laterality ?? this.laterality),
+    caseId: clearCase ? null : (caseId ?? this.caseId),
     protocolId: protocolId ?? this.protocolId,
   );
 }

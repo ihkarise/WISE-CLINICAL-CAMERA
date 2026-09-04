@@ -325,6 +325,27 @@ void main() {
       expect(photo.laterality, Laterality.left);
     });
 
+    test('metadata stays optional and can be cleared (MOD-012)', () async {
+      final controller = controllerFor(mode: PhotoType.photo);
+      await controller.start();
+      controller.setMetadata(
+        bodyPart: BodyPart.hand,
+        laterality: Laterality.left,
+      );
+      expect(controller.state.bodyPart, BodyPart.hand);
+
+      // "Not recorded" must be able to take a set field back to null; the
+      // value-only path cannot express that.
+      controller.setMetadata(clearBodyPart: true, clearLaterality: true);
+
+      expect(controller.state.bodyPart, isNull);
+      expect(controller.state.laterality, isNull);
+
+      final photo = (await controller.capture()).valueOrNull!;
+      expect(photo.bodyPart, isNull);
+      expect(photo.laterality, isNull);
+    });
+
     test('a shutter failure leaves no row behind', () async {
       camera = FakeCameraEngine(failOnCapture: const CameraUnavailable());
       await reboot();
