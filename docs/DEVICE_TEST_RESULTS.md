@@ -160,3 +160,29 @@ The build agent's environment has no Android SDK, no adb and no physical device,
 and the CI artifact host is blocked by egress policy, so device testing is
 performed by the project owner using the CI-produced APK
 (see [`FAST_TRACK_MVP.md`](FAST_TRACK_MVP.md) §4).
+
+---
+
+## MVP-2 checklist (Product Completion + Brand Polish)
+
+Added 2026-09-04. These rows are for the **next** CI APK. `SW-TESTED` means
+covered by automated tests / analyzer only (not device evidence); `PENDING`
+means not yet exercised on hardware. See
+[`MVP_2_PRODUCT_COMPLETION.md`](MVP_2_PRODUCT_COMPLETION.md) §10.
+
+| Item | Software | Device |
+|---|---|---|
+| Launcher icon shows the WISE aperture (drawer, home, recents) | SW-TESTED (assets generated) | PENDING |
+| Splash shows WISE mark on Deep Navy, no white flash | N/A | PENDING |
+| Home shows the WISE brand header + byline | SW-TESTED (widget) | PENDING |
+| Settings → Capture → Protocols opens | SW-TESTED (widget) | PENDING |
+| Create a user protocol; appears under "Your protocols" | SW-TESTED (widget + repo) | PENDING |
+| Enabled protocol tools actually change capture behaviour | SW-TESTED (settings chain) | PENDING |
+| Edit / duplicate / delete a user protocol | SW-TESTED (repo) | PENDING |
+| Built-in protocol offers only Duplicate (immutable) | SW-TESTED (repo + widget) | PENDING |
+| Import Gallery/Files image as BEFORE + add metadata | SW-TESTED (repo path) | PENDING |
+| Imported BEFORE selectable as reference after app restart | SW-TESTED (persistence) | PENDING |
+| Before + After combined export still works; original intact | SW-TESTED (existing) | PENDING |
+
+**Do not mark any Device column PASS from CI or source inspection.** Record real
+behaviour, including failures, and keep synthetic/non-identifiable subjects only.

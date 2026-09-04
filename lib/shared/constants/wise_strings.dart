@@ -8,6 +8,9 @@ abstract final class WiseStrings {
 
   static const String appName = 'WISE Clinical Camera';
 
+  /// WiseAiTechs product identity (master prompt §8).
+  static const String brandByline = 'by WiseAiTechs · For All Medicos';
+
   /// PRD section 1 and UX/UI section 6.
   static const String tagline = 'Take the same photograph again.';
 

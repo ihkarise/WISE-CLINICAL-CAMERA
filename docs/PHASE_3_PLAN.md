@@ -377,3 +377,25 @@ traceability update, with CI as the validator. Before implementation begins in
 earnest, confirm with the project owner whether Phase 3 coding should proceed
 in an environment without a local Flutter toolchain (every change validated
 only in CI), or whether a session with the toolchain is preferred.
+
+---
+
+## 12. MVP-2 addendum (2026-09-04) — Product Completion + Brand Polish
+
+MVP-1 was validated on a real device, so the plan advanced to MVP-2: closing the
+highest-value product gaps without expanding scope. Implemented in one focused
+change (see [`MVP_2_PRODUCT_COMPLETION.md`](MVP_2_PRODUCT_COMPLETION.md)):
+
+1. **User-created protocols** — protocol editor (create/edit/duplicate/delete),
+   Built-in vs Your-protocols separation, and repository-level immutability of
+   built-in protocols. Reachable from Settings → Capture → Protocols.
+2. **Import a BEFORE with metadata** — a "Save as reference" sheet captures
+   body part / laterality / case before an imported image is stored, unmodified.
+3. **Brand identity** — production adaptive launcher icon, branded splash, and an
+   in-app WISE mark with the "by WiseAiTechs · For All Medicos" byline.
+
+No schema migration was needed; comparison/export/capture-context were already
+implemented and were reused unchanged. Validation: `dart format` clean,
+`flutter analyze --fatal-infos --fatal-warnings` clean, `flutter test` green
+(563 tests). Device validation of these items is pending owner action on the
+next CI APK.

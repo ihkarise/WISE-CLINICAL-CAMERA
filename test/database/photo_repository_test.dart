@@ -101,6 +101,33 @@ void main() {
       // committed cleanly without one.
       expect(await repository.getMetadata(photo), isNull);
     });
+
+    test('an imported BEFORE keeps its metadata and is a reusable reference '
+        '(MOD-002, master prompt §4)', () async {
+      final result = await repository.createPhoto(
+        bytes: sampleJpeg(),
+        type: PhotoType.before,
+        source: PhotoSource.import,
+        userId: userId,
+        bodyPart: BodyPart.hand,
+        laterality: Laterality.right,
+      );
+
+      expect(result.isOk, isTrue, reason: '${result.failureOrNull}');
+      final photo = result.valueOrNull!;
+      // Imports are distinguishable from native captures (master prompt §4).
+      expect(photo.source, PhotoSource.import);
+      expect(photo.bodyPart, BodyPart.hand);
+      expect(photo.laterality, Laterality.right);
+
+      // It is offered as a reference for a later AFTER, even across sessions.
+      final candidates = await repository.getReferenceCandidates();
+      expect(candidates.map((p) => p.id), contains(photo.id));
+      expect(
+        candidates.firstWhere((p) => p.id == photo.id).canBeReference,
+        isTrue,
+      );
+    });
   });
 
   group('Before/After relationship', () {

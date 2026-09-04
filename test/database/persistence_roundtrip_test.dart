@@ -301,6 +301,61 @@ void main() {
       expect(await protocols.getProtocols(), isEmpty);
       expect(await protocols.getProtocols(activeOnly: false), hasLength(1));
     });
+
+    test('a built-in protocol cannot be edited (master prompt §7)', () async {
+      await protocols.seedSystemProtocols(userId: userId);
+      final builtIn = (await protocols.getProtocols()).firstWhere(
+        (p) => p.isSystem,
+      );
+
+      final result = await protocols.updateProtocol(
+        builtIn,
+        name: 'Tampered',
+        settings: const ProtocolSettings(measurementRequired: true),
+      );
+
+      expect(result.isFailure, isTrue);
+      final loaded = (await protocols.getProtocol(builtIn.id))!;
+      expect(loaded.name, builtIn.name);
+      expect(loaded.version, builtIn.version);
+      expect(loaded.settings.measurementRequired, isFalse);
+    });
+
+    test('a built-in protocol cannot be deleted (master prompt §7)', () async {
+      await protocols.seedSystemProtocols(userId: userId);
+      final builtIn = (await protocols.getProtocols()).firstWhere(
+        (p) => p.isSystem,
+      );
+
+      final result = await protocols.deleteProtocol(builtIn.id);
+
+      expect(result.isFailure, isTrue);
+      expect(await protocols.getProtocol(builtIn.id), isNotNull);
+    });
+
+    test(
+      'a built-in protocol can still be duplicated into a user copy',
+      () async {
+        await protocols.seedSystemProtocols(userId: userId);
+        final builtIn = (await protocols.getProtocols()).firstWhere(
+          (p) => p.isSystem,
+        );
+
+        final copy = (await protocols.duplicateProtocol(
+          builtIn,
+          userId: userId,
+        )).valueOrNull!;
+
+        expect(copy.isSystem, isFalse);
+        expect(copy.id, isNot(builtIn.id));
+        // The copy is an ordinary user protocol and is therefore editable.
+        final edited = await protocols.updateProtocol(
+          copy,
+          name: 'My dermatology',
+        );
+        expect(edited.isFailure, isFalse);
+      },
+    );
   });
 
   group('exports', () {

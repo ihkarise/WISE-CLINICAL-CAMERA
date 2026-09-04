@@ -6,18 +6,21 @@
 **Product:** WISE Clinical Camera
 **Organization:** WiseAiTechs
 **Tagline:** For All Medicos
-**Document Version:** 1.0
-**Status:** Phase 2 COMPLETE / Phase 3 IN PROGRESS
+**Document Version:** 1.1
+**Status:** Phase 2 COMPLETE / Phase 3 IN PROGRESS / MVP-2 software-complete
 **Last Updated:** 2026-09-04
 
-> **Immediate objective (2026-09-04): MVP-1 — First Usable Device Build.**
-> The active priority is getting the first *usable* Android build onto a real
-> device for internal validation, not expanding the feature set. A green,
-> non-expired debug APK already exists for `main` (`android-debug-apk`, CI run
-> #15). See [`docs/FAST_TRACK_MVP.md`](FAST_TRACK_MVP.md) for the milestone and
-> the owner install steps, and [`docs/DEVICE_TEST_RESULTS.md`](DEVICE_TEST_RESULTS.md)
-> for the evidence log (no device exercised yet). MVP-1 is an internal
-> validation milestone, **not** production-release approval.
+> **Immediate objective (2026-09-04): MVP-2 — Product Completion + Brand Polish.**
+> MVP-1 (first usable Android build) has been validated on a real device by the
+> owner. The active priority is now closing the highest-value product gaps —
+> **user-created protocols, import a BEFORE with metadata, and a recognisable
+> WiseAiTechs identity (icon/splash/brand)** — while keeping working features
+> intact. These are software-implemented and CI-green; **device validation of
+> the MVP-2 items is pending owner action** on the next APK. See
+> [`docs/MVP_2_PRODUCT_COMPLETION.md`](MVP_2_PRODUCT_COMPLETION.md),
+> [`docs/RELEASE_GATES.md`](RELEASE_GATES.md) and
+> [`docs/DEVICE_TEST_RESULTS.md`](DEVICE_TEST_RESULTS.md). MVP-2 is
+> *functionally complete + product-polished*, **not** production-release approval.
 
 ---
 
