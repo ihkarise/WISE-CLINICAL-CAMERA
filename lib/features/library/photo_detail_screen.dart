@@ -5,32 +5,46 @@ import '../../app/providers.dart';
 import '../../app/routes.dart';
 import '../../app/theme/wise_tokens.dart';
 import '../../models/calibration.dart';
+import '../../models/clinical_case.dart';
 import '../../models/enums.dart';
 import '../../models/measurement.dart';
 import '../../models/photo.dart';
 import '../../shared/constants/wise_strings.dart';
 import '../../shared/widgets/clinical_image.dart';
+import '../cases/cases_screen.dart';
 import '../export/export_sheet.dart';
 
 /// Everything known about one photograph.
 final photoDetailProvider =
     FutureProvider.family<
       ({
+        Photo photo,
         Calibration? calibration,
         List<Measurement> measurements,
         List<Photo> afters,
+        ClinicalCase? clinicalCase,
       }),
       Photo
     >((ref, photo) async {
       final clinical = await ref.watch(clinicalRepositoryProvider.future);
       final photos = await ref.watch(photoRepositoryProvider.future);
+      final cases = await ref.watch(caseRepositoryProvider.future);
+
+      // Re-read the row so mutable metadata (a case attached after capture)
+      // reflects the current state rather than the possibly-stale object the
+      // caller navigated with.
+      final current = await photos.getPhoto(photo.id) ?? photo;
 
       return (
-        calibration: await clinical.getCalibrationFor(photo.id),
-        measurements: await clinical.getMeasurements(photo.id),
-        afters: photo.type == PhotoType.before
-            ? await photos.getAfterPhotosFor(photo.id)
+        photo: current,
+        calibration: await clinical.getCalibrationFor(current.id),
+        measurements: await clinical.getMeasurements(current.id),
+        afters: current.type == PhotoType.before
+            ? await photos.getAfterPhotosFor(current.id)
             : const <Photo>[],
+        clinicalCase: current.caseId == null
+            ? null
+            : await cases.getCase(current.caseId!),
       );
     });
 
@@ -81,7 +95,10 @@ class PhotoDetailScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _MetadataRows(photo: photo),
+                  _MetadataRows(
+                    photo: data.photo,
+                    caseName: data.clinicalCase?.displayTitle,
+                  ),
                   const SizedBox(height: WiseTokens.space16),
 
                   // Measurements, or the reason there are none.
@@ -143,6 +160,15 @@ class PhotoDetailScreen extends ConsumerWidget {
                           ref.invalidate(photoDetailProvider(photo));
                         },
                       ),
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.folder_outlined, size: 18),
+                        label: Text(
+                          data.photo.caseId == null
+                              ? 'Add to case'
+                              : 'Change case',
+                        ),
+                        onPressed: () => _linkCase(context, ref, data.photo),
+                      ),
                       if (photo.type == PhotoType.before &&
                           data.afters.isNotEmpty)
                         FilledButton.icon(
@@ -174,12 +200,73 @@ class PhotoDetailScreen extends ConsumerWidget {
       ),
     );
   }
+
+  /// Attaches this photograph to a case, or removes it from one (Functional
+  /// CAS-001..003). Case linking is deliberately available after capture
+  /// (PROJECT_STATUS section 6). A photograph never needs a case, so "No case"
+  /// is always offered.
+  Future<void> _linkCase(
+    BuildContext context,
+    WidgetRef ref,
+    Photo current,
+  ) async {
+    final cases = await ref.read(caseRepositoryProvider.future);
+    final list = await cases.getCases();
+    if (!context.mounted) return;
+
+    final selection = await showDialog<_CaseSelection>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Add to case'),
+        children: [
+          SimpleDialogOption(
+            onPressed: () =>
+                Navigator.of(context).pop(const _CaseSelection(null)),
+            child: const Text('No case'),
+          ),
+          for (final record in list)
+            SimpleDialogOption(
+              onPressed: () =>
+                  Navigator.of(context).pop(_CaseSelection(record.id)),
+              child: Text(record.displayTitle),
+            ),
+        ],
+      ),
+    );
+    if (selection == null) return;
+
+    final photos = await ref.read(photoRepositoryProvider.future);
+    await photos.updatePhoto(
+      current.copyWith(
+        caseId: selection.caseId,
+        clearCaseId: selection.caseId == null,
+      ),
+    );
+
+    ref.invalidate(photoDetailProvider(photo));
+    ref.invalidate(casesProvider);
+    // Both the old and the new case change their photograph count.
+    final previous = current.caseId;
+    if (previous != null) ref.invalidate(casePhotoCountProvider(previous));
+    if (selection.caseId != null) {
+      ref.invalidate(casePhotoCountProvider(selection.caseId!));
+    }
+  }
+}
+
+/// The outcome of the case picker: a chosen case id, or null for "no case".
+/// Distinct from the dialog being dismissed, which returns null from showDialog.
+class _CaseSelection {
+  const _CaseSelection(this.caseId);
+
+  final String? caseId;
 }
 
 class _MetadataRows extends StatelessWidget {
-  const _MetadataRows({required this.photo});
+  const _MetadataRows({required this.photo, this.caseName});
 
   final Photo photo;
+  final String? caseName;
 
   @override
   Widget build(BuildContext context) {
@@ -188,6 +275,7 @@ class _MetadataRows extends StatelessWidget {
       ('Dimensions', '${photo.widthPx} x ${photo.heightPx}'),
       if (photo.bodyPart != null) ('Body part', photo.bodyPart!.label),
       if (photo.laterality != null) ('Side', photo.laterality!.label),
+      if (caseName != null) ('Case', caseName!),
       ('Source', photo.source.wireName),
     ];
 

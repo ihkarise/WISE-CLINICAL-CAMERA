@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wise_clinical_camera/models/enums.dart';
+import 'package:wise_clinical_camera/repositories/case_repository.dart';
 import 'package:wise_clinical_camera/repositories/photo_repository.dart';
 
 import '../support/test_harness.dart';
@@ -354,6 +355,35 @@ void main() {
       await repository.deletePhoto(id);
 
       expect(await repository.getPhotos(), isEmpty);
+    });
+  });
+
+  group('case linking (CAS-002/003)', () {
+    test('a case can be attached after capture and detached again', () async {
+      final cases = CaseRepository(
+        database: harness.database,
+        ids: harness.ids,
+      );
+      final record = (await cases.createCase(
+        userId: userId,
+        title: 'Case A',
+      )).valueOrNull!;
+      final id = await createBefore();
+
+      // Attach the existing photograph to the case (the path the photo detail
+      // screen persists through).
+      final photo = (await repository.getPhoto(id))!;
+      await repository.updatePhoto(photo.copyWith(caseId: record.id));
+
+      expect((await repository.getPhoto(id))!.caseId, record.id);
+      expect(await repository.getPhotos(caseId: record.id), hasLength(1));
+
+      // Detaching returns it to uncategorised.
+      final attached = (await repository.getPhoto(id))!;
+      await repository.updatePhoto(attached.copyWith(clearCaseId: true));
+
+      expect((await repository.getPhoto(id))!.caseId, isNull);
+      expect(await repository.getPhotos(caseId: record.id), isEmpty);
     });
   });
 }

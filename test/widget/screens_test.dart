@@ -332,6 +332,48 @@ void main() {
       expect(find.text('${photo.widthPx} x ${photo.heightPx}'), findsOneWidget);
       expect(find.text(BodyPart.hand.label), findsOneWidget);
     });
+
+    testWidgets('an uncategorised photograph offers to add it to a case', (
+      tester,
+    ) async {
+      late Photo photo;
+      await show(
+        tester,
+        () => PhotoDetailScreen(photo: photo),
+        prepare: () async => photo = await detailFor(),
+      );
+
+      expect(find.text('Add to case'), findsOneWidget);
+      expect(find.text('Change case'), findsNothing);
+    });
+
+    testWidgets('a photograph attached to a case shows it (CAS-002/003)', (
+      tester,
+    ) async {
+      late Photo photo;
+      await show(
+        tester,
+        () => PhotoDetailScreen(photo: photo),
+        prepare: () async {
+          photo = await addPhoto();
+          final cases = await container.read(caseRepositoryProvider.future);
+          final record = (await cases.createCase(
+            userId: userId,
+            title: 'Left forearm follow-up',
+          )).valueOrNull!;
+          final photos = await container.read(photoRepositoryProvider.future);
+          // The path _linkCase persists through: an existing photograph gains a
+          // case after capture.
+          await photos.updatePhoto(photo.copyWith(caseId: record.id));
+          await container.read(photoDetailProvider(photo).future);
+        },
+      );
+
+      // The detail provider re-reads the row, so the attachment is reflected
+      // even though the screen was navigated with the pre-attachment object.
+      expect(find.text('Change case'), findsOneWidget);
+      expect(find.text('Left forearm follow-up'), findsOneWidget);
+    });
   });
 
   group('the export sheet', () {
