@@ -65,6 +65,18 @@ class PluginCameraEngine implements CameraEngine {
   WiseFlashMode get currentFlashMode => _flashMode;
 
   @override
+  CaptureOrientation get currentOrientation {
+    final orientation = _controller?.value.deviceOrientation;
+    if (orientation == null) return CaptureOrientation.portrait;
+    return switch (orientation) {
+      DeviceOrientation.landscapeLeft ||
+      DeviceOrientation.landscapeRight => CaptureOrientation.landscape,
+      DeviceOrientation.portraitUp ||
+      DeviceOrientation.portraitDown => CaptureOrientation.portrait,
+    };
+  }
+
+  @override
   Stream<CameraFrame> get frames => _frames.stream;
 
   @override
@@ -310,12 +322,11 @@ class PluginCameraEngine implements CameraEngine {
 
       if (wasStreaming) await startFrameStream();
 
+      // No dimensions are reported here: the preview size is not the still
+      // size. They are read from the encoded bytes at storage time. See
+      // CapturedImage.dimensionsNote.
       return Result.ok(
-        CapturedImage(
-          bytes: bytes,
-          width: controller.value.previewSize?.width.round() ?? 0,
-          height: controller.value.previewSize?.height.round() ?? 0,
-        ),
+        CapturedImage(bytes: bytes, orientation: currentOrientation),
       );
     } on plugin.CameraException catch (error) {
       return Result.failed(_translate(error));

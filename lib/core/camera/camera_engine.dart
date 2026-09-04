@@ -34,17 +34,34 @@ class CameraFrame {
 class CapturedImage {
   const CapturedImage({
     required this.bytes,
-    required this.width,
-    required this.height,
+    required this.orientation,
     this.mimeType = 'image/jpeg',
-    this.orientation = CaptureOrientation.portrait,
   });
 
   final Uint8List bytes;
-  final int width;
-  final int height;
-  final String mimeType;
+
+  /// Device orientation at the moment of capture.
+  ///
+  /// Recorded into the capture recipe so an AFTER can be guided back to the
+  /// same orientation (Functional CAM-005, Data Model section 11).
   final CaptureOrientation orientation;
+
+  final String mimeType;
+
+  /// Pixel dimensions are deliberately **not** carried here.
+  ///
+  /// A camera's preview resolution is not its still-capture resolution, and on
+  /// Android the preview is frequently reported in sensor (landscape)
+  /// orientation regardless of how the device is held. Copying a preview size
+  /// onto a captured still would put a plausible but wrong number into a
+  /// clinical record, which is exactly what Build Specification section 12 and
+  /// Technical Architecture section 6 warn against.
+  ///
+  /// Dimensions are established by decoding the actual bytes in
+  /// `ImageStorageService.storeOriginal`, which is also where they are
+  /// verified before any row is committed.
+  static const String dimensionsNote =
+      'Dimensions are read from the encoded bytes at storage time.';
 }
 
 /// The platform-independent camera interface (Build Specification section 11,
@@ -66,6 +83,12 @@ abstract class CameraEngine {
 
   /// The camera currently in use, or null before initialisation.
   CameraDescription? get activeCamera;
+
+  /// The device orientation the camera is currently reporting.
+  ///
+  /// Used for the capture recipe and for the orientation comparison that leads
+  /// the guidance priority order (Computer Vision section 33).
+  CaptureOrientation get currentOrientation;
 
   Future<Result<void>> initialize({CameraPosition? preferred});
 

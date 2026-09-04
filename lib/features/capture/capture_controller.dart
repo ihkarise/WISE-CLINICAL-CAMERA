@@ -234,6 +234,7 @@ class CaptureController extends StateNotifier<CaptureState> {
                 alignment,
                 referenceOrientation:
                     state.reference?.captureRecipe?.orientation,
+                currentOrientation: _camera.currentOrientation,
               ),
         clearGuidance: alignment == null,
         clearAlignment: alignment == null && settings.alignmentEnabled,
@@ -252,6 +253,9 @@ class CaptureController extends StateNotifier<CaptureState> {
         lighting: state.lighting,
         focus: state.focus,
         referenceOrientation: state.reference?.captureRecipe?.orientation,
+        // Without this the orientation comparison short-circuits on a null and
+        // the check never runs at all.
+        currentOrientation: _camera.currentOrientation,
         cameraAvailable: _camera.capabilities.hasCamera,
       ),
     );
@@ -468,7 +472,10 @@ class CaptureController extends StateNotifier<CaptureState> {
       flashMode: _camera.capabilities.supportsFlash
           ? _camera.currentFlashMode
           : null,
-      orientation: CaptureOrientation.portrait,
+      // The orientation actually in force, not an assumption. A BEFORE taken
+      // in landscape must record landscape, or the AFTER guidance will compare
+      // against the wrong value (Functional CAM-005).
+      orientation: _camera.currentOrientation,
       gridType: settings?.gridEnabled ?? false ? settings?.gridType : null,
       levelEnabled: settings?.levelEnabled ?? false,
       overlayEnabled: settings?.overlayEnabled ?? false,

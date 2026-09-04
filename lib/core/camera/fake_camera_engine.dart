@@ -51,6 +51,9 @@ class FakeCameraEngine implements CameraEngine {
   final StreamController<CameraFrame> _frames =
       StreamController<CameraFrame>.broadcast();
 
+  /// Settable so a test can exercise the orientation-mismatch path.
+  CaptureOrientation orientation = CaptureOrientation.portrait;
+
   bool _initialized = false;
   CameraDescription? _activeCamera;
   double _zoom = 1;
@@ -74,6 +77,9 @@ class FakeCameraEngine implements CameraEngine {
 
   @override
   WiseFlashMode get currentFlashMode => _flashMode;
+
+  @override
+  CaptureOrientation get currentOrientation => orientation;
 
   @override
   Stream<CameraFrame> get frames => _frames.stream;
@@ -109,13 +115,7 @@ class FakeCameraEngine implements CameraEngine {
         CameraUnavailable(technicalDetail: 'FakeCameraEngine has no bytes set'),
       );
     }
-    return Result.ok(
-      CapturedImage(
-        bytes: bytes,
-        width: _capabilities.maxCaptureWidth,
-        height: _capabilities.maxCaptureHeight,
-      ),
-    );
+    return Result.ok(CapturedImage(bytes: bytes, orientation: orientation));
   }
 
   @override
