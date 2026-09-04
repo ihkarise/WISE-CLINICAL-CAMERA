@@ -88,7 +88,13 @@ class _ExportSheetState extends ConsumerState<ExportSheet> {
 
             if (_message != null) ...[
               const SizedBox(height: WiseTokens.space8),
-              Text(_message!, style: theme.textTheme.bodyMedium),
+              // A live region so the export outcome is announced to a screen
+              // reader, which otherwise gives no feedback after the tap
+              // (UX/UI section 55).
+              Semantics(
+                liveRegion: true,
+                child: Text(_message!, style: theme.textTheme.bodyMedium),
+              ),
             ],
             const SizedBox(height: WiseTokens.space8),
             Text(

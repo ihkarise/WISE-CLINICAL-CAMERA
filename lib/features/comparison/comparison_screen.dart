@@ -53,15 +53,33 @@ class _ComparisonScreenState extends ConsumerState<ComparisonScreen> {
         children: [
           Expanded(child: _buildComparison(mode)),
 
+          // Each slider names what it controls; a bare slider announces only
+          // its value, which is meaningless out of context (UX/UI section 55).
           if (mode == ComparisonMode.slider)
-            Slider(
-              value: _sliderPosition,
-              onChanged: (value) => setState(() => _sliderPosition = value),
+            MergeSemantics(
+              child: Semantics(
+                label: 'Reveal position',
+                child: Slider(
+                  value: _sliderPosition,
+                  semanticFormatterCallback: (v) =>
+                      '${(v * 100).round()} percent before',
+                  onChanged: (value) =>
+                      setState(() => _sliderPosition = value),
+                ),
+              ),
             ),
           if (mode == ComparisonMode.overlay)
-            Slider(
-              value: _overlayOpacity,
-              onChanged: (value) => setState(() => _overlayOpacity = value),
+            MergeSemantics(
+              child: Semantics(
+                label: 'Before opacity',
+                child: Slider(
+                  value: _overlayOpacity,
+                  semanticFormatterCallback: (v) =>
+                      '${(v * 100).round()} percent',
+                  onChanged: (value) =>
+                      setState(() => _overlayOpacity = value),
+                ),
+              ),
             ),
 
           _ModeSelector(selected: mode, onSelected: _selectMode),
