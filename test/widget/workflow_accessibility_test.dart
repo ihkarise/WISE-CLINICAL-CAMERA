@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -246,10 +245,9 @@ void main() {
 
       final message = find.text('Enter a number greater than zero.');
       expect(message, findsOneWidget, reason: 'an invalid value is refused');
-      final node = tester.getSemantics(message);
       expect(
-        node.hasFlag(SemanticsFlag.isLiveRegion),
-        isTrue,
+        tester.getSemantics(message),
+        containsSemantics(isLiveRegion: true),
         reason: 'the rejection must be announced, not only shown in red',
       );
       handle.dispose();
@@ -281,10 +279,9 @@ void main() {
       }
 
       expect(outcome, findsOneWidget, reason: 'the export completes');
-      final node = tester.getSemantics(outcome);
       expect(
-        node.hasFlag(SemanticsFlag.isLiveRegion),
-        isTrue,
+        tester.getSemantics(outcome),
+        containsSemantics(isLiveRegion: true),
         reason: 'a screen reader hears the result without re-reading the sheet',
       );
       handle.dispose();
