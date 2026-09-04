@@ -72,10 +72,31 @@ class LayerRenderer {
     }
     if (stack.hasVisibleFooter) {
       canvas = _drawFooter(canvas, stack.footerLines);
+      // The footer extends the canvas, so a cap applied before compositing is
+      // no longer true. Re-clamp so `maxDimension` means what it says: the
+      // longest edge of the *exported* image, footer included.
+      canvas = _clampToMaxDimension(canvas, maxDimension);
     }
 
     return Result.ok(
       Uint8List.fromList(img.encodeJpg(canvas, quality: quality)),
+    );
+  }
+
+  /// Scales [canvas] down so its longest edge is at most [maxDimension].
+  ///
+  /// A no-op when [maxDimension] is null or already satisfied. Never upscales.
+  static img.Image _clampToMaxDimension(img.Image canvas, int? maxDimension) {
+    if (maxDimension == null) return canvas;
+    final longest = math.max(canvas.width, canvas.height);
+    if (longest <= maxDimension) return canvas;
+
+    final scale = maxDimension / longest;
+    return img.copyResize(
+      canvas,
+      width: math.max(1, (canvas.width * scale).round()),
+      height: math.max(1, (canvas.height * scale).round()),
+      interpolation: img.Interpolation.average,
     );
   }
 
@@ -125,16 +146,7 @@ class LayerRenderer {
       _drawLabel(canvas, 'AFTER', left.width + gap + 8, 12);
     }
 
-    if (maxDimension != null) {
-      final longest = math.max(canvas.width, canvas.height);
-      if (longest > maxDimension) {
-        canvas = img.copyResize(
-          canvas,
-          width: (canvas.width * maxDimension / longest).round(),
-          interpolation: img.Interpolation.average,
-        );
-      }
-    }
+    canvas = _clampToMaxDimension(canvas, maxDimension);
 
     return Result.ok(
       Uint8List.fromList(img.encodeJpg(canvas, quality: quality)),
