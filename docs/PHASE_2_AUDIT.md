@@ -14,12 +14,12 @@ recalled.
 
 | | |
 |---|---|
-| Commit | `db221ef` |
+| Commit | `289f257` (the last commit that changes code) |
 | Date | 2026-09-04 |
 | Toolchain | Flutter 3.35.5 stable · Dart 3.9.2 |
 | `flutter analyze` | No issues found |
 | `flutter test` | **524 passed, 0 failed** |
-| `flutter test --coverage` | **77.8% line coverage (4586/5894)** |
+| `flutter test --coverage` | **77.6% line coverage (4576/5900)** |
 | `flutter build linux --release` | Succeeded; 7.6 MB `libapp.so` |
 | Production source | 114 files |
 | Test source | 33 files |
@@ -58,12 +58,12 @@ on every build and had never once displayed a photograph.
 |---|---:|---:|---|
 | `lib/repositories` | 92.7% | 51.0% | Verified |
 | `lib/models` | 86.3% | 57.8% | Verified |
-| `lib/core` | 75.8% | — | Verified, except the camera |
-| `lib/features` (UI) | 74.3% | ~10% | Verified |
+| `lib/core` | 75.0% | — | Verified, except the camera |
+| `lib/features` (UI) | 74.4% | ~10% | Verified |
 | `lib/shared` | 79.2% | 55.7% | Verified |
 | `lib/app` | 68.1% | 19.5% | Mixed |
 | `lib/services` | 47.8% | — | Platform-bound |
-| `lib/core/camera` | 19.4% | 19.4% | Hardware-bound, unchanged |
+| `lib/core/camera` | 23.9% | 19.4% | Hardware-bound; the plugin engine itself is still 0/197 |
 
 Everything that remains low is low for a reason named in a row below, and the
 single largest remaining block — `plugin_camera_engine.dart`, 0/197 — needs a

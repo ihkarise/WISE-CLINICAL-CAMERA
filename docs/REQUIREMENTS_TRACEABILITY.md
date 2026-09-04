@@ -18,8 +18,8 @@ plan) · `NONE`.
 
 Priorities are from Functional Specification §50 and Data Model §76.
 
-**Re-verified at commit `e82621d`: 524 automated tests, all passing;
-`flutter analyze` clean; 77.8% line coverage.** Every module and test path in
+**Re-verified at commit `289f257`: 524 automated tests, all passing;
+`flutter analyze` clean; 77.6% line coverage.** Every module and test path in
 the table below was checked to exist in the tree.
 
 | Status | Count | Meaning |

@@ -9,11 +9,11 @@ the strength of the code looking right.
 
 | | |
 |---|---|
-| Commit | `db221ef` |
+| Commit | `289f257` (the last commit that changes code) |
 | Date | 2026-09-04 |
 | Toolchain | Flutter 3.35.5 stable · Dart 3.9.2 |
 | Suite | **524 tests, 0 failures** |
-| Coverage | **77.8% lines (4586/5894)** |
+| Coverage | **77.6% lines (4576/5900)** |
 
 ## Status vocabulary
 

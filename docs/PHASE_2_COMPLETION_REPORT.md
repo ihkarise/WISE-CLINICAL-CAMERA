@@ -15,7 +15,7 @@ accuracy, do not hide limitations. This report is written to those terms.
 | Toolchain | Flutter 3.35.5 stable · Dart 3.9.2 |
 | `flutter analyze` | No issues found |
 | `flutter test` | **524 passed, 0 failed** (was 410 at the start of the phase, 223 at the end of Phase 1) |
-| `flutter test --coverage` | **77.8% lines (4586/5894)** — was 45.6% |
+| `flutter test --coverage` | **77.6% lines (4576/5900)** — was 45.6% |
 | `flutter build linux --release` | Succeeded; 7.6 MB `libapp.so` |
 
 ---
@@ -62,11 +62,11 @@ Layer coverage, start of phase → now:
 |---|---:|---:|
 | `lib/repositories` | 51.0% | 92.7% |
 | `lib/models` | 57.8% | 86.3% |
-| `lib/features` (UI) | ~10% | 74.3% |
+| `lib/features` (UI) | ~10% | 74.4% |
 | `lib/shared` | 55.7% | 79.2% |
 | `lib/app` | 19.5% | 68.1% |
-| `lib/core` | — | 75.8% |
-| `lib/core/camera` | 19.4% | 19.4% (unchanged; needs a camera) |
+| `lib/core` | — | 75.0% |
+| `lib/core/camera` | 19.4% | 23.9% (the plugin engine itself is still 0/197; it needs a camera) |
 
 ## 4. Traceability (§4)
 
