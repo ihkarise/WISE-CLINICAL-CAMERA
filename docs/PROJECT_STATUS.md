@@ -834,7 +834,7 @@ docs/PROJECT_STATUS.md
 docs/PROJECT_KNOWLEDGE_MAP.md
 docs/REQUIREMENTS_TRACEABILITY.md
 docs/SPECIFICATION_CONFLICTS.md
-docs/RELEASE_GATES.md
+docs/deployment/RELEASE_GATES.md
 docs/PHASE_3_PLAN.md
 docs/PHASE_3_COMPLETION_REPORT.md
 docs/WISE_Clinical_Camera_PRD_v1.0.md
@@ -981,6 +981,30 @@ The repository itself must be inspected.
 If this document conflicts with actual code or Git history:
 
 **inspect → determine evidence → update the document → continue.**
+
+## 25.1 Phase 3 planning audit — result (2026-09-04)
+
+The above verification has been performed and recorded in
+[`docs/PHASE_3_PLAN.md`](PHASE_3_PLAN.md). Findings:
+
+1. Branch `claude/phase-3-planning-audit-0f2iu8`; HEAD `1c36cc5`; last code
+   commit `289f257`. Phase 2 (PR #1) and the status handoff (PR #2) are merged
+   into `main`. Working tree clean.
+2. The `REQUIREMENTS_TRACEABILITY.md` matrix was re-checked against the tree
+   and is accurate. The eight `PARTIAL` rows share one shape — model,
+   repository and query layer support the capability; no screen uses it — and
+   are the substance of Phase 3 work stream A.
+3. **Environment tooling in this planning session is narrower than at Phase 2:
+   there is no Flutter/Dart SDK on PATH here**, so `flutter analyze`,
+   `flutter test` and any build cannot be run in-session. Software validation
+   for Phase 3 therefore comes from CI (`.github/workflows/ci.yml`) on pull
+   request; hardware/dataset gates remain `BLOCKED — ENVIRONMENT` /
+   `REQUIRES DATASET` as before.
+4. Release blockers are unchanged: Android/iOS build+device validation
+   (C-017), clinical CV dataset (C-016), and the C-019 encryption decision.
+
+The Phase 3 scope, sequence and Definition-of-Done posture are in
+[`docs/PHASE_3_PLAN.md`](PHASE_3_PLAN.md).
 
 ---
 
