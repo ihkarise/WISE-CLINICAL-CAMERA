@@ -1,0 +1,11 @@
+# Phase 2 §15: no clinical photograph is ever committed to this repository.
+#
+# Ignore everything, then re-admit only the structure, the manifests describing
+# a case set, and the results of a validation run. Images are never re-admitted.
+*
+!.gitignore
+!README.md
+!*/
+!**/.gitkeep
+!manifests/**
+!results/**
