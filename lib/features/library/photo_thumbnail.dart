@@ -46,13 +46,21 @@ class PhotoThumbnail extends StatelessWidget {
                 borderRadius: BorderRadius.circular(WiseTokens.controlRadius),
                 child: Stack(
                   children: [
-                    SizedBox(
-                      width: size,
-                      height: size,
+                    // A square derived from the available width rather than
+                    // from `size`. The library grid passes an infinite size to
+                    // mean "fill the tile", and a SizedBox given that inside a
+                    // Column hands the image an unbounded height, which is a
+                    // layout error rather than a big picture.
+                    AspectRatio(
+                      aspectRatio: 1,
                       // The library falls back to the original when a
                       // thumbnail is missing, so the decode must still be
                       // bounded (Data Model section 70).
-                      child: ClinicalImage.file(path, fit: BoxFit.cover),
+                      child: ClinicalImage.file(
+                        path,
+                        fit: BoxFit.cover,
+                        decodeWidth: size,
+                      ),
                     ),
                     if (showBadge)
                       Positioned(
