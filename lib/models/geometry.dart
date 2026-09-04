@@ -67,6 +67,44 @@ class Geometry {
   Geometry copyWith({List<ImagePoint>? points, bool? closed}) =>
       Geometry(points ?? this.points, closed: closed ?? this.closed);
 
+  /// The average of the points; the natural origin for scaling.
+  ImagePoint get centroid {
+    if (points.isEmpty) return const ImagePoint(0, 0);
+    var sumX = 0.0;
+    var sumY = 0.0;
+    for (final point in points) {
+      sumX += point.x;
+      sumY += point.y;
+    }
+    return ImagePoint(sumX / points.length, sumY / points.length);
+  }
+
+  /// Every point shifted by (dx, dy) in image pixels. A rigid move: it changes
+  /// position but not length or area (Functional ANN-003 move).
+  Geometry translated(double dx, double dy) => Geometry(
+    points
+        .map((p) => ImagePoint(p.x + dx, p.y + dy))
+        .toList(growable: false),
+    closed: closed,
+  );
+
+  /// Every point scaled by [factor] about [origin] (the centroid by default),
+  /// which resizes the object in place (Functional ANN-003 resize).
+  Geometry scaled(double factor, {ImagePoint? origin}) {
+    final o = origin ?? centroid;
+    return Geometry(
+      points
+          .map(
+            (p) => ImagePoint(
+              o.x + (p.x - o.x) * factor,
+              o.y + (p.y - o.y) * factor,
+            ),
+          )
+          .toList(growable: false),
+      closed: closed,
+    );
+  }
+
   /// Sum of segment lengths in pixels. For a closed shape the closing segment
   /// is included.
   double pixelPathLength() {

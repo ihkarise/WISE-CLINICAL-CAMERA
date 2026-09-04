@@ -401,12 +401,100 @@ void main() {
       ..addPoint(const ImagePoint(10, 10));
     await controller.commit();
     await controller.applyCalibration(await calibrate());
+
+    // Editing a committed object (ANN-003) is equally non-destructive.
+    controller.select(controller.state.measurements.single.id);
+    await controller.moveSelected(3, 4);
+    await controller.resizeSelected(1.5);
+
     await controller.delete(controller.state.annotations.single.id);
 
     // PRD §33, Privacy PRI-004. Markup is a separate record referencing the
     // photograph; the editor has no code path that could open it for writing,
     // and this is the assertion that keeps it that way.
     expect(await Checksum.ofFile(File(photo.originalPath)), before);
+  });
+
+  group('editing a committed object (ANN-003)', () {
+    test('selecting sets, and a null id clears, the selection', () async {
+      final controller = controllerFor(photo);
+      controller
+        ..selectTool(const AnnotationTool(AnnotationType.arrow))
+        ..addPoint(const ImagePoint(0, 0))
+        ..addPoint(const ImagePoint(10, 10));
+      await controller.commit();
+      final id = controller.state.annotations.single.id;
+
+      controller.select(id);
+      expect(controller.state.selectedId, id);
+      expect(controller.state.tool, isA<SelectTool>());
+
+      controller.select(null);
+      expect(controller.state.selectedId, isNull);
+    });
+
+    test('moving a measurement shifts it without changing its value', () async {
+      final controller = controllerFor(photo);
+      await controller.applyCalibration(await calibrate());
+      controller
+        ..selectTool(const MeasurementTool(MeasurementType.length))
+        ..addPoint(const ImagePoint(10, 10))
+        ..addPoint(const ImagePoint(40, 10));
+      await controller.commit();
+      final before = controller.state.measurements.single;
+
+      controller.select(before.id);
+      await controller.moveSelected(5, 7);
+
+      final after = controller.state.measurements.single;
+      expect(after.geometry.points.first.x, before.geometry.points.first.x + 5);
+      expect(after.geometry.points.first.y, before.geometry.points.first.y + 7);
+      // A rigid move preserves the measured length.
+      expect(after.pixelValue, closeTo(before.pixelValue, 1e-9));
+      expect(after.value, closeTo(before.value!, 1e-9));
+
+      final clinical = await container.read(clinicalRepositoryProvider.future);
+      final reloaded = await clinical.getMeasurements(photo.id);
+      expect(
+        reloaded.single.geometry.points.first.x,
+        before.geometry.points.first.x + 5,
+      );
+    });
+
+    test('resizing a measurement scales it and recomputes the value', () async {
+      final controller = controllerFor(photo);
+      await controller.applyCalibration(await calibrate());
+      controller
+        ..selectTool(const MeasurementTool(MeasurementType.length))
+        ..addPoint(const ImagePoint(10, 10))
+        ..addPoint(const ImagePoint(30, 10)); // 20 px
+      await controller.commit();
+      final before = controller.state.measurements.single;
+
+      controller.select(before.id);
+      await controller.resizeSelected(2);
+
+      final after = controller.state.measurements.single;
+      expect(after.pixelValue, closeTo(before.pixelValue * 2, 1e-6));
+      expect(after.value, closeTo(before.value! * 2, 1e-6));
+    });
+
+    test('editing text updates a text annotation and persists it', () async {
+      final controller = controllerFor(photo);
+      controller
+        ..selectTool(const AnnotationTool(AnnotationType.text))
+        ..addPoint(const ImagePoint(10, 10));
+      await controller.commit();
+      final id = controller.state.annotations.single.id;
+
+      controller.select(id);
+      await controller.editText(id, 'Lesion A');
+
+      expect(controller.state.annotations.single.text, 'Lesion A');
+      final clinical = await container.read(clinicalRepositoryProvider.future);
+      final reloaded = await clinical.getAnnotations(photo.id);
+      expect(reloaded.single.text, 'Lesion A');
+    });
   });
 }
 

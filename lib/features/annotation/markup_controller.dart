@@ -213,6 +213,90 @@ class MarkupController extends StateNotifier<MarkupState> {
     }
   }
 
+  /// Selects a committed object, or clears the selection with a null id
+  /// (Functional ANN-003). Switches to the select tool so a stray tap does not
+  /// start drawing a new object on top of the one being edited.
+  void select(String? id) => state = id == null
+      ? state.copyWith(
+          tool: const SelectTool(),
+          pendingPoints: const <ImagePoint>[],
+          clearSelection: true,
+        )
+      : state.copyWith(
+          tool: const SelectTool(),
+          pendingPoints: const <ImagePoint>[],
+          selectedId: id,
+        );
+
+  /// Moves the selected object by (dx, dy) in image pixels (Functional ANN-003
+  /// move). A measurement's value is unchanged by a rigid move.
+  Future<void> moveSelected(double dx, double dy) =>
+      _transformSelected((geometry) => geometry.translated(dx, dy));
+
+  /// Resizes the selected object about its centroid (Functional ANN-003
+  /// resize). A measurement's value is recomputed, since scaling changes it.
+  Future<void> resizeSelected(double factor) {
+    if (factor <= 0) return Future<void>.value();
+    return _transformSelected((geometry) => geometry.scaled(factor));
+  }
+
+  Future<void> _transformSelected(
+    Geometry Function(Geometry) transform,
+  ) async {
+    final id = state.selectedId;
+    if (id == null) return;
+    final repository = await ref.read(clinicalRepositoryProvider.future);
+    if (!mounted) return;
+
+    final measurementIndex = state.measurements.indexWhere((m) => m.id == id);
+    if (measurementIndex >= 0) {
+      final current = state.measurements[measurementIndex];
+      // Re-derive the value from the moved/scaled geometry so the number always
+      // matches the shape (Data Model section 21).
+      final updated = MeasurementCalculator.recalculate(
+        current,
+        geometry: transform(current.geometry),
+        calibration: state.calibration,
+      );
+      await repository.updateMeasurement(updated);
+      if (!mounted) return;
+      final list = [...state.measurements]..[measurementIndex] = updated;
+      state = state.copyWith(measurements: list);
+      return;
+    }
+
+    final annotationIndex = state.annotations.indexWhere((a) => a.id == id);
+    if (annotationIndex >= 0) {
+      final current = state.annotations[annotationIndex];
+      final updated = current.copyWith(
+        geometry: transform(current.geometry),
+        updatedAt: DateTime.now(),
+      );
+      await repository.updateAnnotation(updated);
+      if (!mounted) return;
+      final list = [...state.annotations]..[annotationIndex] = updated;
+      state = state.copyWith(annotations: list);
+    }
+  }
+
+  /// Edits the text of an annotation (Functional ANN-003 edit). Only text
+  /// annotations carry text; the caller decides whether to offer it.
+  Future<void> editText(String id, String text) async {
+    final repository = await ref.read(clinicalRepositoryProvider.future);
+    if (!mounted) return;
+    final index = state.annotations.indexWhere((a) => a.id == id);
+    if (index < 0) return;
+
+    final updated = state.annotations[index].copyWith(
+      text: text,
+      updatedAt: DateTime.now(),
+    );
+    await repository.updateAnnotation(updated);
+    if (!mounted) return;
+    final list = [...state.annotations]..[index] = updated;
+    state = state.copyWith(annotations: list);
+  }
+
   /// Hides an object without deleting it (Functional MES-008, ANN-003).
   Future<void> toggleVisibility(String id) async {
     final repository = await ref.read(clinicalRepositoryProvider.future);

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/wise_tokens.dart';
+import '../../models/annotation.dart';
 import '../../models/calibration.dart';
 import '../../models/enums.dart';
 import '../../models/geometry.dart';
@@ -91,6 +92,8 @@ class _MarkupScreenState extends ConsumerState<MarkupScreen> {
           if (!state.hasCalibration) _CalibrationPrompt(photo: widget.photo),
 
           _ToolBar(state: state, controller: controller),
+          if (state.selectedId != null)
+            _SelectionControls(state: state, controller: controller),
           _MarkupList(state: state, controller: controller),
         ],
       ),
@@ -245,6 +248,124 @@ class _ToolChip extends StatelessWidget {
   );
 }
 
+/// Editing the selected object: move, resize and (for text) edit
+/// (Functional ANN-003). Non-destructive throughout — every change writes to
+/// the object's own record, never to the original image.
+class _SelectionControls extends StatelessWidget {
+  const _SelectionControls({required this.state, required this.controller});
+
+  final MarkupState state;
+  final MarkupController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    // A move step relative to the image, so it feels the same on any size.
+    final step = state.photo.widthPx / 50;
+    final textAnnotation = _selectedTextAnnotation;
+
+    return Material(
+      color: WiseTokens.softBackground,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: WiseTokens.gutter,
+          vertical: WiseTokens.space4,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Selected',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              tooltip: 'Move left',
+              onPressed: () => controller.moveSelected(-step, 0),
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_forward),
+              tooltip: 'Move right',
+              onPressed: () => controller.moveSelected(step, 0),
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_upward),
+              tooltip: 'Move up',
+              onPressed: () => controller.moveSelected(0, -step),
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_downward),
+              tooltip: 'Move down',
+              onPressed: () => controller.moveSelected(0, step),
+            ),
+            IconButton(
+              icon: const Icon(Icons.zoom_out_map),
+              tooltip: 'Enlarge',
+              onPressed: () => controller.resizeSelected(1.1),
+            ),
+            IconButton(
+              icon: const Icon(Icons.zoom_in_map),
+              tooltip: 'Shrink',
+              onPressed: () => controller.resizeSelected(0.9),
+            ),
+            if (textAnnotation != null)
+              IconButton(
+                icon: const Icon(Icons.text_fields),
+                tooltip: 'Edit text',
+                onPressed: () => _editText(context, textAnnotation.id),
+              ),
+            IconButton(
+              icon: const Icon(Icons.close),
+              tooltip: 'Deselect',
+              onPressed: () => controller.select(null),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Annotation? get _selectedTextAnnotation {
+    for (final annotation in state.annotations) {
+      if (annotation.id == state.selectedId &&
+          annotation.type == AnnotationType.text) {
+        return annotation;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _editText(BuildContext context, String id) async {
+    final current = _selectedTextAnnotation?.text ?? '';
+    final textController = TextEditingController(text: current);
+
+    final text = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit text'),
+        content: TextField(
+          controller: textController,
+          autofocus: true,
+          decoration: const InputDecoration(border: OutlineInputBorder()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(textController.text),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+
+    textController.dispose();
+    if (text != null) await controller.editText(id, text);
+  }
+}
+
 /// The objects on this photograph, each hideable and deletable
 /// (Functional MES-008, ANN-003).
 class _MarkupList extends StatelessWidget {
@@ -266,6 +387,8 @@ class _MarkupList extends StatelessWidget {
           for (final measurement in state.measurements)
             ListTile(
               dense: true,
+              selected: state.selectedId == measurement.id,
+              onTap: () => controller.select(measurement.id),
               leading: const Icon(Icons.straighten, size: 18),
               title: Text(measurement.type.label),
               subtitle: Text(measurement.displayValue),
@@ -278,6 +401,8 @@ class _MarkupList extends StatelessWidget {
           for (final annotation in state.annotations)
             ListTile(
               dense: true,
+              selected: state.selectedId == annotation.id,
+              onTap: () => controller.select(annotation.id),
               leading: const Icon(Icons.edit_outlined, size: 18),
               title: Text(annotation.type.label),
               trailing: _RowActions(
