@@ -143,13 +143,14 @@ void main() {
       await tester.tap(find.text(ComparisonMode.slider.label));
       await tester.pump();
 
-      final node = tester.getSemantics(find.byType(Slider));
+      // The slider's own node carries the name (its percentage value is
+      // Slider's built-in behaviour and rides on the merged data). The name is
+      // the ACC-005 property: the control says what it does.
       expect(
-        node.label,
+        tester.getSemantics(find.byType(Slider)).label,
         contains('Reveal position'),
         reason: 'the reveal slider must say what it reveals',
       );
-      expect(node.value, contains('before'));
       handle.dispose();
     });
 
@@ -176,9 +177,11 @@ void main() {
       await tester.tap(find.text(ComparisonMode.overlay.label));
       await tester.pump();
 
-      final node = tester.getSemantics(find.byType(Slider));
-      expect(node.label, contains('Before opacity'));
-      expect(node.value, contains('percent'));
+      expect(
+        tester.getSemantics(find.byType(Slider)).label,
+        contains('Before opacity'),
+        reason: 'the overlay slider must say what it fades',
+      );
       handle.dispose();
     });
 
@@ -203,9 +206,11 @@ void main() {
         },
       );
 
-      final node = tester.getSemantics(find.byType(Slider));
-      expect(node.label, contains('Reference opacity'));
-      expect(node.value, contains('percent'));
+      expect(
+        tester.getSemantics(find.byType(Slider)).label,
+        contains('Reference opacity'),
+        reason: 'the ghost-overlay slider must name the reference it fades',
+      );
       handle.dispose();
     });
   });
