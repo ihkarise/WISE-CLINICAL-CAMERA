@@ -1021,6 +1021,23 @@ pinned toolchain. **Scope:** this is software validation. The Android/iOS
 performance and clinical-CV validation remain open, and the project stays
 **NOT RELEASE READY**. See [`PHASE_3_PLAN.md`](PHASE_3_PLAN.md) §5.4.
 
+**Work stream B — accessibility & usability validation (2026-09-04).** Building
+on work stream A, the clinical workflow screens gained the screen-reader
+semantics they were missing without adding any UI a clinician sees: every
+slider now announces *what it controls* (capture reference opacity, comparison
+reveal, comparison overlay opacity) rather than a bare percentage, and two
+status changes previously carried only by colour — the export result and a
+rejected calibration — are announced through live regions.
+`workflow_accessibility_test.dart` asserts these against the capture,
+comparison, calibration, export and library screens, closing the RELEASE_GATES
+"guideline matchers" gap. Because this session has **no local Flutter
+toolchain**, this is `IMPLEMENTED — NOT VALIDATED` until the Phase 3B CI run;
+on-device VoiceOver/TalkBack accessibility is a separate, device-blocked gate.
+Traceability records it as ACC-005/ACC-006 (`PARTIAL`) and ACC-007 (device).
+Work stream C (real device / camera / dataset / C-019 decision) is **not**
+started. See [`PHASE_3_PLAN.md`](PHASE_3_PLAN.md) §5.2 and
+[`deployment/RELEASE_GATES.md`](deployment/RELEASE_GATES.md).
+
 ---
 
 # 26. PHASE 3 DEFINITION OF DONE
@@ -1322,6 +1339,8 @@ At the end of every major phase:
 | Laterality workflow                | Implemented; software-validated (Phase 3)      |
 | Case linking workflow              | Implemented; software-validated (Phase 3)      |
 | Recipe inheritance                 | Implemented (Phase 2)                          |
+| Accessibility — software           | Slider naming + live-region status added (Phase 3B); IMPLEMENTED — NOT VALIDATED, awaiting Phase 3B CI |
+| Accessibility — on-device (VoiceOver/TalkBack) | Pending (device)                    |
 | Real camera validation             | Pending (device)                               |
 | Real clinical-image CV validation  | Pending (dataset)                              |
 | Android build                      | Compiles in CI (Phase 3, PR #3); device validation pending |

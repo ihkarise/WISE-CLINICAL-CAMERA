@@ -248,9 +248,29 @@ the pinned toolchain (Flutter 3.35.5 / Dart 3.9.2). Two format/import fixes
 **Work stream B partial outcome:** B1 (make the Android/iOS/Linux CI build jobs
 actually run) is achieved — all three executed green on a real runner for the
 first time, closing the "no build has ever run" release blocker (compilation
-only; device validation still open). B2 (broader accessibility coverage) and B3
-(coverage tracking — now 76.8%) remain as follow-ups. Work stream C
-(hardware/dataset/decision items) is unchanged.
+only; device validation still open).
+
+**B2 (broader accessibility coverage) is now implemented.** The clinical
+workflow screens gained the screen-reader semantics they were missing: every
+slider (capture reference opacity, comparison reveal, comparison overlay
+opacity) announces *what it adjusts* rather than a bare percentage, and two
+status changes that had been carried only by colour — the export result and a
+rejected calibration — are announced through live regions.
+`workflow_accessibility_test.dart` asserts these against the capture,
+comparison, calibration, export and library screens, and adds
+`labeledTapTargetGuideline` coverage for comparison/export/library. This closes
+the RELEASE_GATES gap that named "the full capture, library, comparison and
+calibration screens are not asserted against the guideline matchers." Because
+this session has no local Flutter toolchain, the new tests are
+`IMPLEMENTED — NOT VALIDATED` until the Phase 3B CI run; the accessibility of
+the *on-device* screen readers (VoiceOver/TalkBack) is a separate,
+device-blocked gate. The traceability matrix records this as ACC-005/ACC-006
+(`PARTIAL`) and ACC-007 (device-blocked).
+
+B3 (coverage tracking) remains a follow-up; the new UI is small and carries
+tests, so it should not regress coverage materially, but the figure is only
+known once CI reports it. Work stream C (hardware/dataset/decision items) is
+unchanged and is **not** started here.
 
 ## 6. Non-goals (from `PROJECT_STATUS.md` §18)
 

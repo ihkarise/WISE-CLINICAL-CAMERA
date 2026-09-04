@@ -71,6 +71,21 @@ SDK, no Xcode, no device. See
 [`docs/testing/DEVICE_TEST_PLAN.md`](testing/DEVICE_TEST_PLAN.md) and
 [`docs/deployment/RELEASE_GATES.md`](deployment/RELEASE_GATES.md).
 
+### Work stream B — accessibility (2026-09-04)
+
+Work stream B validated and extended the accessibility of the clinical
+workflow screens. The new `ACC` section below decomposes UX/UI §55 into traced
+rows. ACC-001..004 were already covered by `accessibility_test.dart` (green in
+the 10076c6 CI run) and are `DONE`. ACC-005 (sliders that name what they
+control) and ACC-006 (export/calibration outcomes announced through live
+regions) are new code in this work stream, covered by
+`workflow_accessibility_test.dart`; they are `PARTIAL` — the software is
+implemented but was authored without a local Flutter toolchain, so it is
+`IMPLEMENTED — NOT VALIDATED` until the Phase 3B CI run turns them green.
+ACC-007 (on-device VoiceOver/TalkBack) stays device-blocked. These rows are
+tracked in the dedicated ACC section and are deliberately kept out of the
+headline FS counts above, which describe the Functional Specification rows.
+
 ---
 
 ## Non-Negotiable Principles (Build Spec §2)
@@ -239,3 +254,21 @@ SDK, no Xcode, no device. See
 | AI §56 | AI feature flags | P4 | `core/config/feature_flags.dart` | `DONE` | `test/privacy/network_policy_test.dart` |
 | AI §64 | Mandatory per-photo AI cost = $0 | P0 | no cloud call sites in core | `DONE` | `test/privacy/network_policy_test.dart` |
 | AI Tier 2–4 | On-device ML / self-hosted / cloud implementations | — | interfaces only | `DEFERRED` | NONE |
+
+## ACC — Accessibility (UX/UI §55, Build Spec §93)
+
+UX/UI §55 has no numbered sub-requirements; the ACC IDs below are this matrix's
+own decomposition of it, so each guideline area can be traced to code and a
+test. "Software" status is a widget-tree assertion in CI; the on-device
+screen-reader experience (VoiceOver/TalkBack) is a separate, device-blocked
+gate — see `RELEASE_GATES.md`.
+
+| Req | Description | Priority | Module | Status | Test |
+|---|---|---|---|---|---|
+| ACC-001 | Action-oriented semantic labels on interactive controls (never bare "Button"/"Icon"/"Tool") | P1 | `shared/widgets/wise_mode_card.dart`, `features/library/photo_thumbnail.dart`, `features/capture/capture_screen.dart` | `DONE` | `test/widget/accessibility_test.dart` |
+| ACC-002 | Interaction targets ≥ 48 dp; capture control dominant | P1 | `app/theme/wise_tokens.dart`, `features/home/home_screen.dart` | `DONE` | `test/widget/accessibility_test.dart` |
+| ACC-003 | Content remains usable at larger text scale (clamped 1.4×) | P1 | `features/home/home_screen.dart` | `DONE` | `test/widget/accessibility_test.dart` |
+| ACC-004 | Status never communicated by colour alone | P0 | `shared/widgets/wise_status_chip.dart`, `core/measurement/measurement_change.dart` | `DONE` | `test/widget/accessibility_test.dart` |
+| ACC-005 | Sliders announce what they control, not only a value | P1 | `features/capture/capture_screen.dart`, `features/comparison/comparison_screen.dart` | `PARTIAL` — software implemented, awaiting Phase 3B CI | `test/widget/workflow_accessibility_test.dart` |
+| ACC-006 | Action outcomes (export result, rejected calibration) announced via live regions | P1 | `features/export/export_sheet.dart`, `features/calibration/calibration_screen.dart` | `PARTIAL` — software implemented, awaiting Phase 3B CI | `test/widget/workflow_accessibility_test.dart` |
+| ACC-007 | On-device VoiceOver / TalkBack pass | P1 | whole app | `PARTIAL` — device-blocked, tracked in `RELEASE_GATES.md` | MANUAL (`docs/testing/DEVICE_TEST_PLAN.md`) |
