@@ -10,6 +10,15 @@
 **Status:** Phase 2 COMPLETE / Phase 3 IN PROGRESS
 **Last Updated:** 2026-09-04
 
+> **Immediate objective (2026-09-04): MVP-1 — First Usable Device Build.**
+> The active priority is getting the first *usable* Android build onto a real
+> device for internal validation, not expanding the feature set. A green,
+> non-expired debug APK already exists for `main` (`android-debug-apk`, CI run
+> #15). See [`docs/FAST_TRACK_MVP.md`](FAST_TRACK_MVP.md) for the milestone and
+> the owner install steps, and [`docs/DEVICE_TEST_RESULTS.md`](DEVICE_TEST_RESULTS.md)
+> for the evidence log (no device exercised yet). MVP-1 is an internal
+> validation milestone, **not** production-release approval.
+
 ---
 
 # 1. PURPOSE OF THIS DOCUMENT

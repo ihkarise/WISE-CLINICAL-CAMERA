@@ -43,6 +43,16 @@ the strength of the code looking right.
 > VoiceOver or TalkBack pass on real hardware has been run, and that remains
 > `BLOCKED — ENVIRONMENT`.
 
+> **Fast-track MVP note (2026-09-04).** The immediate objective is MVP-1 — a
+> first *usable* Android build in the project owner's hands for internal
+> validation — not a production release. A green, non-expired debug APK already
+> exists for `main` (`android-debug-apk`, CI run #15). MVP-1 does **not** clear
+> any release gate below: every real-device, camera, permission, performance,
+> measurement and clinical-CV row stays `BLOCKED — ENVIRONMENT` until device
+> evidence is recorded in [`docs/DEVICE_TEST_RESULTS.md`](../DEVICE_TEST_RESULTS.md).
+> See [`docs/FAST_TRACK_MVP.md`](../FAST_TRACK_MVP.md). MVP-1 being usable is not
+> production-release approval.
+
 ## Status vocabulary
 
 | Status | Meaning |
