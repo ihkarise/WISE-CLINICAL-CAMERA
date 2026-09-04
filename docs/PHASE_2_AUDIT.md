@@ -43,8 +43,9 @@ Coverage figures per file come from `coverage/lcov.info`, produced by
 | **BROKEN** | Present and known not to work. |
 
 There are no BROKEN entries at this commit. There was one — the library grid,
-defect 7 below — and it is fixed. There is one MISSING entry, and it is
-deliberate.
+defect 7 below — and it is fixed. There are no MISSING entries: the one
+capability that is absent, at-rest encryption, is DEFERRED by a specification
+that names the fallback, and is recorded as C-019.
 
 ## The headline
 
@@ -158,7 +159,7 @@ camera.
 | 6.5 | Corrupt / hostile input handling | VERIFIED | `corrupt_input_test.dart` — **72 tests** | — |
 | 6.6 | Secret scan | VERIFIED | CI job, tuned against false positives per Phase 2 §30 | — |
 | 6.7 | Permission service | BLOCKED — ENVIRONMENT | 28.6% | The decision logic is now exercised through a scripted shim; the platform channel itself still needs a device. |
-| 6.8 | At-rest encryption | **MISSING** | — | Not implemented. Relies on OS-level device encryption. Deliberate for V1; recorded as a product decision in `SPECIFICATION_CONFLICTS.md`. |
+| 6.8 | At-rest encryption | **DEFERRED** | Privacy §338 permits it | No application-level encryption; relies on OS device encryption and an excluded Android backup. On a device with no passcode this offers nothing. Recorded as C-019 in `SPECIFICATION_CONFLICTS.md`. |
 
 ## 7. Platform and shell
 

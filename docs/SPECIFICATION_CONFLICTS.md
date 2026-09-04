@@ -11,6 +11,53 @@ implementation chosen, and whether a product decision is still owed.
   configuration constant with a safe default; decision owed.
 - `MISSING INPUT` — a required file or datum was never supplied; implementation
   proceeds with a documented fallback; input owed.
+- `DEFERRED` — a specification permits leaving it out of V1 and names the
+  fallback; a decision is owed before a deployment that needs it.
+
+The Phase 2 re-classification table below indexes every entry against the six
+buckets Phase 2 §5 asks for.
+
+
+## Phase 2 re-classification
+
+Phase 2 §5 asks for every entry to be placed in one of six buckets, so that what
+is genuinely finished is separable from what is waiting on something. The
+detailed entries below are unchanged; this is the index.
+
+| # | Subject | Phase 2 classification | Waiting on |
+|---|---|---|---|
+| C-001 | Home screen composition | **RESOLVED** | — |
+| C-002 | Grid in the saved original | **RESOLVED** | — |
+| C-003 | Ghost overlay flip control | **RESOLVED** | — |
+| C-004 | Alignment vocabulary and thresholds | **REQUIRES DATASET** · safe default exists | A governed clinical dataset |
+| C-005 | Confidence weighting | **REQUIRES DATASET** · safe default exists | The same dataset |
+| C-006 | Blur and lighting thresholds | **REQUIRES DATASET** and **REQUIRES HARDWARE VALIDATION** · safe default exists | Dataset, then per-device-tier validation |
+| C-007 | V1 table set | **RESOLVED** | — |
+| C-008 | Dimensions on an undecodable import | **RESOLVED** | — |
+| C-009 | Measurement `WIDTH` versus `LENGTH` | **RESOLVED** | — |
+| C-010 | Percentage change when `before == 0` | **RESOLVED** | — |
+| C-011 | Calibration reuse across photographs | **RESOLVED** | — |
+| C-012 | Users table versus no account required | **RESOLVED** | — |
+| C-013 | Which CV library | **SAFE DEFAULT EXISTS** | A device benchmark (CV §73 stage 6) before any change |
+| C-014 | Design system source file | **REQUIRES PRODUCT DECISION** | The source file, or a decision to keep the inferred tokens |
+| C-015 | Brand assets | **REQUIRES PRODUCT DECISION** | Logo, icon, splash and the Poppins files |
+| C-016 | CV regression dataset | **REQUIRES DATASET** | The dataset itself; `test_data/` is laid out for it |
+| C-017 | Device and platform verification | **REQUIRES HARDWARE VALIDATION** | Android SDK, Xcode, real devices |
+| C-018 | Hard capture blocking | **RESOLVED** | — |
+| C-019 | Database encryption | **DEFERRED** by specification | A decision to enable it for a sensitive deployment |
+
+Eleven resolved, one with a safe default, five waiting on an input nobody in
+this environment can supply, one product decision pair, one deferred.
+
+**Nothing in this list blocks release on its own except C-016 and C-017**, and
+neither is a coding gap.
+
+A note on C-018, because it changed. The decision recorded there — that only a
+deliberately configured protocol may block capture, and no shipped protocol
+does — was correct and implemented in `CaptureReadiness`. Phase 2 found that the
+value never reached it: activating a protocol stored only its tool block, and
+the capture controller never passed a protocol into the check. The decision was
+sound; the wiring was missing. It is wired now, and tested.
 
 ---
 
@@ -390,3 +437,40 @@ system protocols. No built-in configuration blocks capture. The `Capture anyway`
 affordance is always present when warnings exist.
 
 **Decision owed.** None.
+
+---
+
+## C-019 — Database encryption · DEFERRED
+
+**Documents:** Privacy §14, Privacy §33 ("local encryption" listed among the
+protections), Privacy §338.
+
+**Conflict.** Privacy §33 lists local encryption among the protections the
+application offers, and Privacy §14 says the project "should evaluate encrypted
+SQLite storage for sensitive deployments" — but the same section then states
+plainly: "If encryption is not enabled in an initial build, the application must
+still rely on OS sandboxing and secure device storage."
+
+**Interpretations.** (a) Encrypted SQLite is required for V1. (b) It is an
+evaluated option, with OS-level protection as the specified fallback.
+
+**Chosen.** (b), because §338 states the fallback as a permitted position rather
+than a gap, and because a key-management scheme introduced without a decision
+about where keys live would be worse than the OS keystore, not better.
+
+**Implementation.** No application-level encryption. The database and the
+originals live in application-private storage, which is encrypted at rest by
+both platforms when the device has a passcode. Nothing is written outside the
+sandbox: `StoragePaths` resolves everything under the application support
+directory, and Android backup is excluded so the database cannot be copied off
+the device by a cloud backup.
+
+**Consequence, stated plainly.** On a device with no passcode, or one that is
+rooted or jailbroken, clinical photographs are readable by anything with
+filesystem access. That is a property of the deployment, not of the code, and it
+is the reason this is a decision rather than a default.
+
+**Decision owed.** Yes, before any deployment handling identifiable clinical
+data on shared or unmanaged devices. Enabling it means adopting SQLCipher (or
+platform equivalent) and a key stored in the platform keystore — Privacy §344
+and §354 already specify where keys may and may not live.
