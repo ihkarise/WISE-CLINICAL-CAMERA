@@ -72,8 +72,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/protocols/
+  # No `assets:` block. The five system protocols are seeded from
+  # `ProtocolRepository.systemProtocolTemplates()`, not loaded from a file, and
+  # nothing in the application reads from the asset bundle at all. Declaring an
+  # `assets/protocols/` directory that never had anything in it made `flutter
+  # analyze --fatal-warnings` fail on any fresh clone, because git does not
+  # track an empty directory.
   # Poppins is the specified primary font (UX/UI section 3). The font files were
   # not supplied with the repository; see SPECIFICATION_CONFLICTS C-015. The
   # theme declares the family with the specified fallback chain, so the app
