@@ -260,12 +260,13 @@ rejected calibration — are announced through live regions.
 comparison, calibration, export and library screens, and adds
 `labeledTapTargetGuideline` coverage for comparison/export/library. This closes
 the RELEASE_GATES gap that named "the full capture, library, comparison and
-calibration screens are not asserted against the guideline matchers." Because
-this session has no local Flutter toolchain, the new tests are
-`IMPLEMENTED — NOT VALIDATED` until the Phase 3B CI run; the accessibility of
-the *on-device* screen readers (VoiceOver/TalkBack) is a separate,
-device-blocked gate. The traceability matrix records this as ACC-005/ACC-006
-(`PARTIAL`) and ACC-007 (device-blocked).
+calibration screens are not asserted against the guideline matchers." Written
+without a local Flutter toolchain and validated in CI: pull request
+[#4](https://github.com/ihkarise/WISE-CLINICAL-CAMERA/pull/4) is green on commit
+`fa5066a` — all five jobs pass, 556 tests, 0 failures. The accessibility of the
+*on-device* screen readers (VoiceOver/TalkBack) is a separate, device-blocked
+gate. The traceability matrix records this as ACC-005/ACC-006 (`DONE`) and
+ACC-007 (device-blocked).
 
 B3 (coverage tracking) remains a follow-up; the new UI is small and carries
 tests, so it should not regress coverage materially, but the figure is only

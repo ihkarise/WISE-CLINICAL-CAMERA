@@ -79,9 +79,9 @@ rows. ACC-001..004 were already covered by `accessibility_test.dart` (green in
 the 10076c6 CI run) and are `DONE`. ACC-005 (sliders that name what they
 control) and ACC-006 (export/calibration outcomes announced through live
 regions) are new code in this work stream, covered by
-`workflow_accessibility_test.dart`; they are `PARTIAL` — the software is
-implemented but was authored without a local Flutter toolchain, so it is
-`IMPLEMENTED — NOT VALIDATED` until the Phase 3B CI run turns them green.
+`workflow_accessibility_test.dart`; they are now `DONE`, validated by the
+Phase 3B pull request ([#4](https://github.com/ihkarise/WISE-CLINICAL-CAMERA/pull/4))
+CI run on commit `fa5066a` — all five jobs green, **556 tests, 0 failures**.
 ACC-007 (on-device VoiceOver/TalkBack) stays device-blocked. These rows are
 tracked in the dedicated ACC section and are deliberately kept out of the
 headline FS counts above, which describe the Functional Specification rows.
@@ -269,6 +269,6 @@ gate — see `RELEASE_GATES.md`.
 | ACC-002 | Interaction targets ≥ 48 dp; capture control dominant | P1 | `app/theme/wise_tokens.dart`, `features/home/home_screen.dart` | `DONE` | `test/widget/accessibility_test.dart` |
 | ACC-003 | Content remains usable at larger text scale (clamped 1.4×) | P1 | `features/home/home_screen.dart` | `DONE` | `test/widget/accessibility_test.dart` |
 | ACC-004 | Status never communicated by colour alone | P0 | `shared/widgets/wise_status_chip.dart`, `core/measurement/measurement_change.dart` | `DONE` | `test/widget/accessibility_test.dart` |
-| ACC-005 | Sliders announce what they control, not only a value | P1 | `features/capture/capture_screen.dart`, `features/comparison/comparison_screen.dart` | `PARTIAL` — software implemented, awaiting Phase 3B CI | `test/widget/workflow_accessibility_test.dart` |
-| ACC-006 | Action outcomes (export result, rejected calibration) announced via live regions | P1 | `features/export/export_sheet.dart`, `features/calibration/calibration_screen.dart` | `PARTIAL` — software implemented, awaiting Phase 3B CI | `test/widget/workflow_accessibility_test.dart` |
+| ACC-005 | Sliders announce what they control, not only a value | P1 | `features/capture/capture_screen.dart`, `features/comparison/comparison_screen.dart` | `DONE` | `test/widget/workflow_accessibility_test.dart` |
+| ACC-006 | Action outcomes (export result, rejected calibration) announced via live regions | P1 | `features/export/export_sheet.dart`, `features/calibration/calibration_screen.dart` | `DONE` | `test/widget/workflow_accessibility_test.dart` |
 | ACC-007 | On-device VoiceOver / TalkBack pass | P1 | whole app | `PARTIAL` — device-blocked, tracked in `RELEASE_GATES.md` | MANUAL (`docs/testing/DEVICE_TEST_PLAN.md`) |

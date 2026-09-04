@@ -1030,10 +1030,12 @@ status changes previously carried only by colour — the export result and a
 rejected calibration — are announced through live regions.
 `workflow_accessibility_test.dart` asserts these against the capture,
 comparison, calibration, export and library screens, closing the RELEASE_GATES
-"guideline matchers" gap. Because this session has **no local Flutter
-toolchain**, this is `IMPLEMENTED — NOT VALIDATED` until the Phase 3B CI run;
-on-device VoiceOver/TalkBack accessibility is a separate, device-blocked gate.
-Traceability records it as ACC-005/ACC-006 (`PARTIAL`) and ACC-007 (device).
+"guideline matchers" gap. Written without a local Flutter toolchain and
+**validated in CI**: pull request
+[#4](https://github.com/ihkarise/WISE-CLINICAL-CAMERA/pull/4) is green on commit
+`fa5066a` — all five jobs pass, **556 tests, 0 failures**. On-device
+VoiceOver/TalkBack accessibility is a separate, device-blocked gate.
+Traceability records it as ACC-005/ACC-006 (`DONE`) and ACC-007 (device).
 Work stream C (real device / camera / dataset / C-019 decision) is **not**
 started. See [`PHASE_3_PLAN.md`](PHASE_3_PLAN.md) §5.2 and
 [`deployment/RELEASE_GATES.md`](deployment/RELEASE_GATES.md).
@@ -1339,15 +1341,15 @@ At the end of every major phase:
 | Laterality workflow                | Implemented; software-validated (Phase 3)      |
 | Case linking workflow              | Implemented; software-validated (Phase 3)      |
 | Recipe inheritance                 | Implemented (Phase 2)                          |
-| Accessibility — software           | Slider naming + live-region status added (Phase 3B); IMPLEMENTED — NOT VALIDATED, awaiting Phase 3B CI |
+| Accessibility — software           | Slider naming + live-region status added (Phase 3B); software-validated (PR #4 CI green, `fa5066a`) |
 | Accessibility — on-device (VoiceOver/TalkBack) | Pending (device)                    |
 | Real camera validation             | Pending (device)                               |
 | Real clinical-image CV validation  | Pending (dataset)                              |
 | Android build                      | Compiles in CI (Phase 3, PR #3); device validation pending |
 | iOS build                          | Compiles in CI (Phase 3, PR #3); device validation pending |
 | Linux release build                | Verified (Phase 3 CI + local, 7.4 MB libapp.so) |
-| Automated tests                    | 548 passing (Phase 3, PR #3 CI `10076c6`)      |
-| Coverage                           | 76.8% lines (4758/6195), Phase 3 CI            |
+| Automated tests                    | 556 passing (Phase 3B, PR #4 CI `fa5066a`; was 548 at PR #3) |
+| Coverage                           | 76.8% lines (4758/6195) last measured at PR #3 `10076c6`; PR #4 adds 8 accessibility tests, not yet re-measured |
 | Production readiness               | NOT RELEASE READY                              |
 
 ---

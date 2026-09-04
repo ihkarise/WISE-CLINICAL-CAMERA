@@ -34,11 +34,14 @@ the strength of the code looking right.
 > colour — the export result and a rejected calibration — are now announced
 > through live regions. `workflow_accessibility_test.dart` asserts these against
 > the real screens, backed by real SQLite and a real filesystem. **This work was
-> written without a local Flutter toolchain (none is available in this
-> environment), so it is `IMPLEMENTED — NOT VALIDATED` until the Phase 3B CI run
-> executes `flutter analyze` and `flutter test`.** Software accessibility is
-> distinct from **physical-device accessibility**: no VoiceOver or TalkBack pass
-> on real hardware has been run, and that remains `BLOCKED — ENVIRONMENT`.
+> written without a local Flutter toolchain and validated in CI:** all five jobs
+> passed on commit `fa5066a` in pull request
+> [#4](https://github.com/ihkarise/WISE-CLINICAL-CAMERA/pull/4) — Format/analyze/
+> test (**556 tests, 0 failures**), Privacy gates, Android build, iOS build and
+> Linux build. The software-accessibility gate below therefore moves to PASS.
+> Software accessibility is distinct from **physical-device accessibility**: no
+> VoiceOver or TalkBack pass on real hardware has been run, and that remains
+> `BLOCKED — ENVIRONMENT`.
 
 ## Status vocabulary
 
@@ -55,17 +58,16 @@ the strength of the code looking right.
 
 | Status | Count |
 |---|---:|
-| PASS | 26 |
+| PASS | 27 |
 | PARTIAL | 5 |
-| IMPLEMENTED — NOT VALIDATED | 1 |
 | BLOCKED — ENVIRONMENT | 5 |
 | DEFERRED | 1 |
 | FAIL | 0 |
 
-> The counts move once the Phase 3B CI run lands: the software-accessibility row
-> flips from `IMPLEMENTED — NOT VALIDATED` to PASS. The new physical-device
-> accessibility row is the fifth `BLOCKED — ENVIRONMENT` gate, alongside camera,
-> permissions and device performance.
+> Phase 3B moved the software-accessibility gate to PASS (green on `fa5066a`,
+> PR #4). The physical-device accessibility row is the fifth
+> `BLOCKED — ENVIRONMENT` gate, alongside camera, permissions and device
+> performance.
 
 **V1 is not releasable.** No gate fails, and none is blocked by missing code.
 The Android and iOS builds now compile in CI, so the "no build has ever run"
@@ -157,7 +159,7 @@ plugin registrant. See `linux/README.md`.
 | Gate | Status | Evidence | How to verify | Blocking |
 |---|---|---|---|---|
 | Every screen renders | **PASS** | `screen_smoke_test.dart` (10) builds all of them with real data and fails on any framework exception | `flutter test test/widget/screen_smoke_test.dart` | Yes |
-| Accessibility — software | **PARTIAL → IMPLEMENTED, NOT VALIDATED** | `accessibility_test.dart` (13, PASS) covers the shared status widgets, home and the tokens. Phase 3 work stream B adds `workflow_accessibility_test.dart`, extending assertions to the capture, comparison, calibration, export and library screens: every slider now names what it controls, the export result and a rejected calibration are announced through live regions, and comparison/export/library controls pass `labeledTapTargetGuideline`. Written without a local Flutter toolchain — awaiting the Phase 3B CI run to become PASS | `flutter test test/widget/accessibility_test.dart test/widget/workflow_accessibility_test.dart` | No |
+| Accessibility — software | **PASS** | `accessibility_test.dart` (13) covers the shared status widgets, home and the tokens. Phase 3 work stream B adds `workflow_accessibility_test.dart`, extending assertions to the capture, comparison, calibration, export and library screens: every slider now names what it controls, the export result and a rejected calibration are announced through live regions, and comparison/export/library controls pass `labeledTapTargetGuideline`. Green on commit `fa5066a` (PR #4), 556 tests | `flutter test test/widget/accessibility_test.dart test/widget/workflow_accessibility_test.dart` | No |
 | Accessibility — physical device (VoiceOver / TalkBack) | **BLOCKED — ENVIRONMENT** | Screen-reader semantics are asserted in the widget tree; no VoiceOver or TalkBack pass has been run on real hardware | `docs/testing/DEVICE_TEST_PLAN.md` on an iOS and an Android device | No — but the on-device screen-reader experience is unverified until it closes |
 | Status never colour-only | **PASS** | Every state chip carries an icon and a word; the measurement-change direction carries a `+`/`-` sign, and the export result and calibration rejection are text in a live region, not colour alone | `flutter test test/widget/accessibility_test.dart` | Yes |
 | Performance on device | **BLOCKED — ENVIRONMENT** | Decode is bounded by construction; no heap or frame profile exists | D-PRF-01..08 | No |
