@@ -157,6 +157,46 @@ void main() {
       expect(total, 2, reason: 'filtering is a view, not a deletion');
     });
 
+    testWidgets('filtering by body part narrows the view (MOD-030)', (
+      tester,
+    ) async {
+      await show(
+        tester,
+        LibraryScreen.new,
+        prepare: () async {
+          await addPhoto(bodyPart: BodyPart.hand);
+          await addPhoto(bodyPart: BodyPart.face);
+          container.read(libraryFilterProvider.notifier).state =
+              const LibraryFilter(bodyPart: BodyPart.hand);
+          await container.read(libraryPhotosProvider.future);
+        },
+      );
+
+      // Both photographs exist; only the hand matches the filter.
+      expect(find.byType(PhotoThumbnail), findsOneWidget);
+    });
+
+    testWidgets('offers a body-part filter control listing the categories', (
+      tester,
+    ) async {
+      await show(
+        tester,
+        LibraryScreen.new,
+        prepare: () async {
+          await addPhoto(bodyPart: BodyPart.hand);
+          await container.read(libraryPhotosProvider.future);
+        },
+      );
+
+      expect(find.byType(DropdownButton<BodyPart?>), findsOneWidget);
+
+      // The grid is in its data state (no spinner), so opening the menu settles.
+      await tester.tap(find.byType(DropdownButton<BodyPart?>));
+      await tester.pumpAndSettle();
+      expect(find.text('Hand'), findsWidgets);
+      expect(find.text('Any body part'), findsWidgets);
+    });
+
     testWidgets('a thumbnail is badged with its type', (tester) async {
       late Photo photo;
       await show(

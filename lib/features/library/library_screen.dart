@@ -81,6 +81,18 @@ class LibraryScreen extends ConsumerWidget {
                           .update((f) => f.copyWith(type: type)),
                     ),
                   ),
+                const SizedBox(width: WiseTokens.space16),
+                _BodyPartFilter(
+                  selected: filter.bodyPart,
+                  onChanged: (part) => ref
+                      .read(libraryFilterProvider.notifier)
+                      .update(
+                        (f) => f.copyWith(
+                          bodyPart: part,
+                          clearBodyPart: part == null,
+                        ),
+                      ),
+                ),
               ],
             ),
           ),
@@ -118,6 +130,27 @@ class LibraryScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Body-part filter (Functional MOD-030). A dropdown rather than a chip row
+/// because there are eighteen categories; "Any body part" clears it.
+class _BodyPartFilter extends StatelessWidget {
+  const _BodyPartFilter({required this.selected, required this.onChanged});
+
+  final BodyPart? selected;
+  final ValueChanged<BodyPart?> onChanged;
+
+  @override
+  Widget build(BuildContext context) => DropdownButton<BodyPart?>(
+    value: selected,
+    hint: const Text('Any body part'),
+    items: [
+      const DropdownMenuItem<BodyPart?>(child: Text('Any body part')),
+      for (final part in BodyPart.values)
+        DropdownMenuItem<BodyPart?>(value: part, child: Text(part.label)),
+    ],
+    onChanged: onChanged,
+  );
 }
 
 class _FilterChip extends StatelessWidget {
