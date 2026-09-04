@@ -1,7 +1,6 @@
 import 'package:camera/camera.dart' as plugin;
 import 'package:flutter/material.dart';
 
-import '../../app/theme/wise_tokens.dart';
 import 'camera_engine.dart';
 import 'plugin_camera_engine.dart';
 
@@ -14,10 +13,26 @@ import 'plugin_camera_engine.dart';
 ///
 /// It also means a test or a development build running against
 /// `FakeCameraEngine` gets a placeholder rather than a platform-channel error.
+///
+/// The placeholder's colours are parameters rather than WISE design tokens.
+/// Technical Architecture section 57 asks for the camera engine to be a
+/// reusable platform component rather than something hard-coded for one
+/// product, and a `core/` module reaching into `app/theme` for a colour is
+/// exactly the dependency that stops that being true.
 class CameraPreviewSurface extends StatelessWidget {
-  const CameraPreviewSurface({required this.engine, super.key});
+  const CameraPreviewSurface({
+    required this.engine,
+    this.placeholderColor = const Color(0xFF11161C),
+    this.placeholderIconColor = const Color(0xFF6B7684),
+    super.key,
+  });
 
   final CameraEngine engine;
+
+  /// Shown while no preview is available. Defaults to a neutral dark surface,
+  /// which is what a camera view wants in any product.
+  final Color placeholderColor;
+  final Color placeholderIconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +48,13 @@ class CameraPreviewSurface extends StatelessWidget {
     // No initialised preview: an engine that is still starting, unavailable, or
     // a fake in a test. A neutral surface, not an error — the failure path is
     // handled by the capture controller, which has the typed failure.
-    return const ColoredBox(
-      color: WiseTokens.cameraSurface,
+    return ColoredBox(
+      color: placeholderColor,
       child: Center(
         child: Icon(
           Icons.photo_camera_outlined,
           size: 48,
-          color: WiseTokens.slateGray,
+          color: placeholderIconColor,
         ),
       ),
     );

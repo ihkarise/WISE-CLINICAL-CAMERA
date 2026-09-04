@@ -117,6 +117,25 @@ jobs:
           fi
           echo "No secrets detected."
 
+      # Technical Architecture sections 18 and 57: the camera engine and the
+      # other core modules are meant to be reusable by other WISE applications.
+      # In practice that requirement reduces to one rule — a core/ module may
+      # depend on core/ and models/, and on nothing above it. The rule is cheap
+      # to break by accident: one theme colour is enough to turn a platform
+      # component into a product component.
+      - name: Assert the core layer depends on nothing above it
+        run: |
+          set +e
+          VIOLATIONS=$(grep -rnE "import '(\.\./)*(app|features|repositories|shared)/" lib/core/)
+          set -e
+          if [ -n "$VIOLATIONS" ]; then
+            echo "::error::A core/ module imports a layer above it:"
+            echo "$VIOLATIONS"
+            echo "See docs/architecture/PLATFORM_BOUNDARIES.md."
+            exit 1
+          fi
+          echo "Core layer boundary holds."
+
       # Build Specification section 60: check dependency health.
       - name: Dependency audit
         run: |

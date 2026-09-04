@@ -149,8 +149,13 @@ class _PreviewSurface extends ConsumerWidget {
   const _PreviewSurface();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) =>
-      CameraPreviewSurface(engine: ref.watch(cameraEngineProvider));
+  Widget build(BuildContext context, WidgetRef ref) => CameraPreviewSurface(
+    engine: ref.watch(cameraEngineProvider),
+    // The surface takes its colours from the product rather than owning
+    // them, so it stays reusable outside WISE.
+    placeholderColor: WiseTokens.cameraSurface,
+    placeholderIconColor: WiseTokens.slateGray,
+  );
 }
 
 class _TopBar extends StatelessWidget {
