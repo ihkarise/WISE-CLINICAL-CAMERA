@@ -205,6 +205,115 @@ abstract final class CvDataset {
     return result;
   }
 
+  /// Fine parallel striations: an analogue of a hair-bearing area.
+  ///
+  /// Dense, highly repetitive, locally self-similar texture — the pattern most
+  /// likely to generate plausible but wrong correspondences (CV section 64).
+  static img.Image hairLike({
+    int width = 320,
+    int height = 320,
+    int seed = 5,
+    double angle = 0.35,
+  }) {
+    final image = img.Image(width: width, height: height);
+    final random = math.Random(seed);
+    img.fill(image, color: img.ColorRgb8(150, 130, 120));
+
+    for (var i = 0; i < 900; i++) {
+      final x = random.nextDouble() * width;
+      final y = random.nextDouble() * height;
+      final length = 25 + random.nextInt(60);
+      final jitter = (random.nextDouble() - 0.5) * 0.25;
+      final shade = 40 + random.nextInt(90);
+      img.drawLine(
+        image,
+        x1: x.round(),
+        y1: y.round(),
+        x2: (x + math.cos(angle + jitter) * length).round(),
+        y2: (y + math.sin(angle + jitter) * length).round(),
+        color: img.ColorRgb8(shade, shade - 10, shade - 20),
+      );
+    }
+    return image;
+  }
+
+  /// A large flat bright region covering part of the frame: an analogue of a
+  /// dressing or bandage applied between visits.
+  static img.Image withDressing(img.Image source, {double coverage = 0.45}) {
+    final result = img.Image.from(source);
+    img.fillRect(
+      result,
+      x1: (result.width * (1 - coverage)).round(),
+      y1: 0,
+      x2: result.width - 1,
+      y2: result.height - 1,
+      color: img.ColorRgb8(238, 235, 228),
+    );
+    return result;
+  }
+
+  /// A soft directional gradient: an analogue of a hard shadow falling across
+  /// the subject.
+  static img.Image withShadow(img.Image source, {double strength = 0.65}) {
+    final result = img.Image.from(source);
+    for (var y = 0; y < result.height; y++) {
+      for (var x = 0; x < result.width; x++) {
+        final falloff = 1 - strength * (x / result.width);
+        final pixel = result.getPixel(x, y);
+        final value = (pixel.r * falloff).clamp(0, 255).toInt();
+        result.setPixelRgb(x, y, value, value, value);
+      }
+    }
+    return result;
+  }
+
+  /// Displaces only part of the frame: an analogue of the subject moving while
+  /// the camera did not (CV section 28).
+  ///
+  /// No single rigid transform explains this, which is exactly the point.
+  static img.Image withPartialMovement(
+    img.Image source, {
+    double fraction = 0.5,
+    int shift = 26,
+  }) {
+    final result = img.Image.from(source);
+    final boundary = (result.height * fraction).round();
+    final region = img.copyCrop(
+      source,
+      x: 0,
+      y: 0,
+      width: source.width,
+      height: boundary,
+    );
+    img.fillRect(
+      result,
+      x1: 0,
+      y1: 0,
+      x2: result.width - 1,
+      y2: boundary,
+      color: img.ColorRgb8(128, 128, 128),
+    );
+    img.compositeImage(result, region, dstX: shift, dstY: 0);
+    return result;
+  }
+
+  /// Non-linear tone change: an analogue of daylight versus a clinical lamp,
+  /// as opposed to a uniform brightness offset.
+  static img.Image withGamma(img.Image source, double gamma) {
+    final result = img.Image.from(source);
+    final table = List<int>.generate(
+      256,
+      (i) => (math.pow(i / 255, gamma) * 255).round().clamp(0, 255),
+    );
+    for (var y = 0; y < result.height; y++) {
+      for (var x = 0; x < result.width; x++) {
+        final value = table[result.getPixel(x, y).r.toInt()];
+        result.setPixelRgb(x, y, value, value, value);
+      }
+    }
+    return result;
+  }
+
   static Uint8List toJpeg(img.Image image, {int quality = 95}) =>
       Uint8List.fromList(img.encodeJpg(image, quality: quality));
 

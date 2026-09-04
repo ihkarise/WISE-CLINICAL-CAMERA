@@ -34,6 +34,61 @@ time (`test/support/cv_dataset.dart`). No clinical photographs were supplied
 with the repository, and real ones must not be committed to it (Privacy §52,
 Build Specification §97).
 
+### Measured results (phase 2)
+
+Produced by `test/cv/alignment_benchmark_test.dart`, which regenerates
+`build/cv_benchmark.md` on every run. Desktop VM, 320 px working resolution,
+4-level pyramid at 1.3x.
+
+| Applied | Status | Confidence | Scale estimated / true | Rotation est / true |
+|---|---|---:|---|---|
+| identity | GOOD | 0.95 | 1.000 / 1.000 | 0.0 / 0.0 |
+| scale 0.7x | FAIR | 0.76 | 0.701 / 0.700 | — |
+| scale 0.8x | FAIR | 0.84 | 0.801 / 0.800 | — |
+| scale 0.9x | FAIR | 0.80 | 0.899 / 0.900 | — |
+| scale 1.1x | FAIR | 0.81 | 1.100 / 1.100 | — |
+| scale 1.2x | POOR | 0.64 | 1.200 / 1.200 | — |
+| scale 1.3x | POOR | 0.67 | 1.302 / 1.300 | — |
+| rotate 2 deg | GOOD | 0.91 | — | 2.0 / 2.0 |
+| rotate 5 deg | GOOD | 0.85 | — | 5.0 / 5.0 |
+| rotate 10 deg | GOOD | 0.86 | — | 10.0 / 10.0 |
+| rotate 15 deg | FAIR | 0.81 | — | 15.0 / 15.0 |
+| translate 10-60 px | GOOD | 0.87-0.92 | — | — |
+
+**Geometric accuracy is excellent.** Scale is recovered to within 0.3 % across
+0.7x-1.3x, rotation to within 0.1 deg across 2-15 deg, and translation to
+within one part in 320. The usable scale range measured 0.6x to 1.5x — wider
+than the pyramid was designed for.
+
+**Median frame latency: 69 ms. Reference preparation: 71 ms.** Desktop VM, not
+a phone. Device budgets come from D-PRF-03.
+
+#### A characterisation worth knowing: confidence falls with scale
+
+Confidence drops from 0.95 at 1.0x to 0.64 at 1.2x **even though the scale
+estimate stays exact**. The cause is mechanical: as subject size diverges,
+fewer pyramid levels match, so the inlier count falls from ~337 to ~27, and
+inlier count is one of the five weighted signals.
+
+The consequence is that `confidence` currently blends two different questions:
+
+1. *How much should this estimate be trusted?* — high at 1.2x: 27 of 27
+   candidates agreed and the answer was right to three decimal places.
+2. *How well aligned is the clinician?* — poor at 1.2x: they are 20 % too close.
+
+Conflating them is conservative, so it is safe, and the user is not misled:
+the `dimensions.scale` flag is false and the guidance correctly says "move
+farther away". But a POOR status on an estimate that is in fact exact is
+misleading to a *developer* reading the metrics, and it means the numeric score
+should not be read as a trust measure.
+
+**Not changed in phase 2.** Rebalancing the weights would be tuning against
+synthetic data, which is the thing CV section 78 forbids. It is recorded here
+so the real-dataset work has a specific question to answer: should the score
+separate estimator trust from alignment quality?
+
+---
+
 **Established by the current suite**
 
 | Property | Evidence |
@@ -49,6 +104,37 @@ Build Specification §97).
 | Every gate in `ConfidenceModel` rejects what it claims to | `false_confidence_test.dart` |
 | Blur monotonically reduces the focus score | `quality_engines_test.dart` |
 | Brightness and histogram differences are detected and described | `quality_engines_test.dart` |
+| Geometric accuracy is quantified, not merely asserted | `alignment_benchmark_test.dart` |
+| Clinical failure-mode analogues behave correctly | `clinical_analogue_test.dart` |
+
+### Clinical analogue results (phase 2)
+
+Structural analogues of the cases CV section 64 names. Produced by
+`test/cv/clinical_analogue_test.dart` into `build/cv_analogues.md`.
+
+| Case | Outcome | Correct? |
+|---|---|---|
+| hair-like striations, shifted 24 px | GOOD 0.94, ready=false | Yes — tracked the shift, refused ready because position is off |
+| two different hair patterns | UNAVAILABLE | Yes — refused rather than matching self-similar texture |
+| dressing over 45 % of frame | FAIR 0.75, ready=false | Yes — graceful degradation |
+| dressing over 92 % of frame | UNAVAILABLE | Yes — almost no subject left |
+| strong directional shadow | alignment GOOD 0.87, lighting DIFFERENT | Yes — see below |
+| gamma 0.5 (daylight vs lamp) | lighting DIFFERENT | Yes |
+| gamma 0.8, alignment | GOOD 0.95 | Yes — descriptors survive a monotonic tone change |
+| half the frame displaced (subject moved) | POOR 0.42, ready=false | Yes — no single rigid transform explains it |
+
+The shadow case is the instructive one. Nothing moved, so the alignment engine
+correctly reports GOOD and its own `isReady` is true. The lighting engine
+correctly reports DIFFERENT. **Neither is wrong**, and the protection comes
+from `CaptureReadiness` combining them: `ready=false, canCapture=true`. A test
+now pins that combination, because wiring readiness to alignment alone would
+be an easy and silent regression.
+
+**These are analogues, not clinical images.** They reproduce the structural
+property that makes each case hard — self-similarity, featurelessness, a
+luminance gradient, non-rigid motion — and establish that the refusal machinery
+engages on the right cues. They say nothing about real skin, real hair or real
+dressings. That remains D-ALN-01..10.
 
 **Not established, and not claimed**
 
