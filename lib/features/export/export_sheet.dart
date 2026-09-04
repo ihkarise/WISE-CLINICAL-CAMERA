@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/providers.dart';
 import '../../app/theme/wise_tokens.dart';
 import '../../models/enums.dart';
+import '../../models/export_record.dart';
 import '../../models/photo.dart';
 import '../../shared/constants/wise_strings.dart';
 import 'export_service.dart';
@@ -30,6 +32,11 @@ class _ExportSheetState extends ConsumerState<ExportSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // The active protocol may recommend a preset (Functional PRO-002).
+    final recommended = ref
+        .watch(activeProtocolProvider)
+        ?.settings
+        .exportPreset;
     final presets = ExportPreset.values.where(
       // Pair presets need a second photograph.
       (preset) => !preset.isPair || widget.comparisonWith != null,
@@ -67,6 +74,14 @@ class _ExportSheetState extends ConsumerState<ExportSheet> {
                         style: theme.textTheme.labelSmall,
                       )
                     : null,
+                trailing: preset == recommended
+                    ? Text(
+                        'Recommended',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: WiseTokens.wiseBlue,
+                        ),
+                      )
+                    : null,
                 enabled: !_busy,
                 onTap: () => _export(preset),
               ),
@@ -94,10 +109,20 @@ class _ExportSheetState extends ConsumerState<ExportSheet> {
 
     try {
       final service = await ref.read(exportServiceProvider.future);
+
+      // Honour the protocol's footer preference (Functional PRO-002). It can
+      // only suppress a footer the preset would otherwise carry, never force
+      // one onto a preset (like Original or Anonymized) that omits it.
+      final base = ExportConfiguration.forPreset(preset);
+      final footerAllowed =
+          ref.read(activeProtocolProvider)?.settings.exportFooter ?? true;
+      final config = footerAllowed ? base : base.copyWith(includeFooter: false);
+
       final result = await service.export(
         photo: widget.photo,
         preset: preset,
         pairedWith: widget.comparisonWith,
+        configuration: config,
       );
 
       if (!mounted) return;

@@ -112,8 +112,20 @@ class CaptureController extends StateNotifier<CaptureState> {
 
     // Record which protocol was in force, so the capture is attributable to
     // the version it was taken under (Data Model section 11, Functional
-    // PRO-005).
-    state = state.copyWith(protocolId: ref.read(activeProtocolProvider)?.id);
+    // PRO-005), and apply the preferences it carries (Functional PRO-002).
+    final protocol = ref.read(activeProtocolProvider);
+    state = state.copyWith(
+      protocolId: protocol?.id,
+      measurementRequired: protocol?.settings.measurementRequired ?? false,
+    );
+
+    // Start the camera at the protocol's preferred flash where the device can
+    // honour it; an unsupported mode is left as it was rather than failing.
+    final preferredFlash = protocol?.settings.preferredFlash;
+    if (preferredFlash != null && _camera.capabilities.supportsFlash) {
+      await _camera.setFlashMode(preferredFlash);
+      if (!mounted) return;
+    }
 
     _startLevel();
     _startFrames();
@@ -274,6 +286,12 @@ class CaptureController extends StateNotifier<CaptureState> {
         // applies it, and a deliberately strict protocol is silently advisory.
         protocol: ref.read(activeProtocolProvider)?.settings,
         referenceOrientation: state.reference?.captureRecipe?.orientation,
+        // The protocol may prefer an orientation even without a reference
+        // (Functional PRO-002); advisory only.
+        preferredOrientation: ref
+            .read(activeProtocolProvider)
+            ?.settings
+            .preferredOrientation,
         // Without this the orientation comparison short-circuits on a null and
         // the check never runs at all.
         currentOrientation: _camera.currentOrientation,
@@ -314,16 +332,28 @@ class CaptureController extends StateNotifier<CaptureState> {
 
   // --- Metadata -------------------------------------------------------------
 
+  /// Records the optional clinical context for this capture.
+  ///
+  /// Every field is optional (Functional MOD-012): a photograph is captured
+  /// with body part, laterality and case all null unless the clinician sets
+  /// them. Passing a `clear…` flag resets that field back to unset, which the
+  /// value-only path cannot express.
   void setMetadata({
     BodyPart? bodyPart,
     Laterality? laterality,
     String? caseId,
     String? protocolId,
+    bool clearBodyPart = false,
+    bool clearLaterality = false,
+    bool clearCase = false,
   }) => state = state.copyWith(
     bodyPart: bodyPart,
     laterality: laterality,
     caseId: caseId,
     protocolId: protocolId,
+    clearBodyPart: clearBodyPart,
+    clearLaterality: clearLaterality,
+    clearCase: clearCase,
   );
 
   // --- Capture --------------------------------------------------------------

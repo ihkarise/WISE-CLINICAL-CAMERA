@@ -16,6 +16,7 @@ import '../level/level_indicator.dart';
 import '../overlay/ghost_overlay.dart';
 import '../settings/tools_drawer.dart';
 import 'capture_controller.dart';
+import 'capture_metadata_sheet.dart';
 import 'capture_review_sheet.dart';
 import 'capture_state.dart';
 
@@ -199,6 +200,40 @@ class _TopBar extends StatelessWidget {
               LevelIndicator(reading: state.level),
             const SizedBox(width: WiseTokens.space8),
             TextButton.icon(
+              icon: Icon(
+                _hasMetadata
+                    ? Icons.assignment_turned_in_outlined
+                    : Icons.assignment_outlined,
+                size: 18,
+              ),
+              label: const Text('Details'),
+              style: TextButton.styleFrom(
+                foregroundColor: WiseTokens.cameraOnSurface,
+              ),
+              onPressed: () => showModalBottomSheet<void>(
+                context: context,
+                isScrollControlled: true,
+                builder: (_) => CaptureMetadataSheet(
+                  bodyPart: state.bodyPart,
+                  laterality: state.laterality,
+                  caseId: state.caseId,
+                  onBodyPartChanged: (value) => controller.setMetadata(
+                    bodyPart: value,
+                    clearBodyPart: value == null,
+                  ),
+                  onLateralityChanged: (value) => controller.setMetadata(
+                    laterality: value,
+                    clearLaterality: value == null,
+                  ),
+                  onCaseChanged: (value) => controller.setMetadata(
+                    caseId: value,
+                    clearCase: value == null,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: WiseTokens.space8),
+            TextButton.icon(
               icon: const Icon(Icons.tune, size: 18),
               label: const Text('Tools'),
               style: TextButton.styleFrom(
@@ -215,6 +250,11 @@ class _TopBar extends StatelessWidget {
       ),
     );
   }
+
+  bool get _hasMetadata =>
+      state.bodyPart != null ||
+      state.laterality != null ||
+      state.caseId != null;
 
   String get _modeLabel => switch (state.mode) {
     PhotoType.before => WiseStrings.beforeTitle,

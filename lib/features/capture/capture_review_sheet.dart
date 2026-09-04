@@ -79,6 +79,14 @@ class CaptureReviewSheet extends StatelessWidget {
                   },
                   onDark: true,
                 ),
+              // The protocol expects a measurement. Advisory only — it never
+              // prevents keeping the photograph (Functional PRO-002, C-018).
+              if (state.measurementRequired)
+                const WiseStatusChip(
+                  label: 'Measurement recommended',
+                  tone: WiseStatusTone.neutral,
+                  onDark: true,
+                ),
             ],
           ),
         ),

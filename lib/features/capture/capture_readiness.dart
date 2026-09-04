@@ -61,6 +61,7 @@ class CaptureReadiness {
     FocusAssessment? focus,
     ProtocolSettings? protocol,
     CaptureOrientation? referenceOrientation,
+    CaptureOrientation? preferredOrientation,
     CaptureOrientation? currentOrientation,
     bool cameraAvailable = true,
   }) {
@@ -85,6 +86,24 @@ class CaptureReadiness {
               'The Before photograph was taken in '
               '${referenceOrientation.wireName}.',
           severity: WarningSeverity.caution,
+          action: 'Rotate the device',
+        ),
+      );
+    }
+
+    // The active protocol may prefer an orientation (Functional PRO-002). It is
+    // only ever advisory (C-018), and is suppressed when a reference already
+    // pins the same orientation so the clinician is not warned twice.
+    if (preferredOrientation != null &&
+        currentOrientation != null &&
+        preferredOrientation != currentOrientation &&
+        preferredOrientation != referenceOrientation) {
+      warnings.add(
+        CaptureWarning(
+          message:
+              'This protocol is usually captured in '
+              '${preferredOrientation.wireName}.',
+          severity: WarningSeverity.advisory,
           action: 'Rotate the device',
         ),
       );

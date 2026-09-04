@@ -325,6 +325,27 @@ void main() {
       expect(photo.laterality, Laterality.left);
     });
 
+    test('metadata stays optional and can be cleared (MOD-012)', () async {
+      final controller = controllerFor(mode: PhotoType.photo);
+      await controller.start();
+      controller.setMetadata(
+        bodyPart: BodyPart.hand,
+        laterality: Laterality.left,
+      );
+      expect(controller.state.bodyPart, BodyPart.hand);
+
+      // "Not recorded" must be able to take a set field back to null; the
+      // value-only path cannot express that.
+      controller.setMetadata(clearBodyPart: true, clearLaterality: true);
+
+      expect(controller.state.bodyPart, isNull);
+      expect(controller.state.laterality, isNull);
+
+      final photo = (await controller.capture()).valueOrNull!;
+      expect(photo.bodyPart, isNull);
+      expect(photo.laterality, isNull);
+    });
+
     test('a shutter failure leaves no row behind', () async {
       camera = FakeCameraEngine(failOnCapture: const CameraUnavailable());
       await reboot();
@@ -487,6 +508,50 @@ void main() {
       final controller = await mismatchedAfterSession();
 
       expect(controller.state.readiness?.canCapture, isTrue);
+    });
+
+    test('applies the protocol preferred flash on start (PRO-002)', () async {
+      container.read(activeProtocolProvider.notifier).state = protocolWith(
+        const ProtocolSettings(preferredFlash: WiseFlashMode.auto),
+      );
+
+      final controller = controllerFor(mode: PhotoType.photo);
+      await controller.start();
+
+      expect(camera.currentFlashMode, WiseFlashMode.auto);
+    });
+
+    test('exposes that a measurement is expected (PRO-002)', () async {
+      container.read(activeProtocolProvider.notifier).state = protocolWith(
+        const ProtocolSettings(measurementRequired: true),
+      );
+
+      final controller = controllerFor(mode: PhotoType.photo);
+      await controller.start();
+
+      // Advisory only: it is surfaced, and it does not block the shutter.
+      expect(controller.state.measurementRequired, isTrue);
+      expect(controller.state.readiness?.canCapture, isTrue);
+    });
+
+    test('a preferred orientation warns, never blocks (PRO-002)', () async {
+      container.read(activeProtocolProvider.notifier).state = protocolWith(
+        const ProtocolSettings(
+          preferredOrientation: CaptureOrientation.landscape,
+        ),
+      );
+      camera.orientation = CaptureOrientation.portrait;
+
+      final controller = controllerFor(mode: PhotoType.photo);
+      await controller.start();
+
+      expect(controller.state.readiness?.canCapture, isTrue);
+      expect(
+        controller.state.readiness?.warnings.any(
+          (w) => w.message.contains('landscape'),
+        ),
+        isTrue,
+      );
     });
 
     test('its tools reach the settings precedence chain', () async {

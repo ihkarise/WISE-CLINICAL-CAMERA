@@ -10,6 +10,7 @@ import 'package:wise_clinical_camera/features/grid/grid_overlay.dart';
 import 'package:wise_clinical_camera/features/library/library_screen.dart';
 import 'package:wise_clinical_camera/features/library/photo_detail_screen.dart';
 import 'package:wise_clinical_camera/features/library/photo_thumbnail.dart';
+import 'package:wise_clinical_camera/models/capture_protocol.dart';
 import 'package:wise_clinical_camera/models/enums.dart';
 import 'package:wise_clinical_camera/models/geometry.dart';
 import 'package:wise_clinical_camera/models/measurement.dart';
@@ -157,6 +158,46 @@ void main() {
       expect(total, 2, reason: 'filtering is a view, not a deletion');
     });
 
+    testWidgets('filtering by body part narrows the view (MOD-030)', (
+      tester,
+    ) async {
+      await show(
+        tester,
+        LibraryScreen.new,
+        prepare: () async {
+          await addPhoto(bodyPart: BodyPart.hand);
+          await addPhoto(bodyPart: BodyPart.face);
+          container.read(libraryFilterProvider.notifier).state =
+              const LibraryFilter(bodyPart: BodyPart.hand);
+          await container.read(libraryPhotosProvider.future);
+        },
+      );
+
+      // Both photographs exist; only the hand matches the filter.
+      expect(find.byType(PhotoThumbnail), findsOneWidget);
+    });
+
+    testWidgets('offers a body-part filter control listing the categories', (
+      tester,
+    ) async {
+      await show(
+        tester,
+        LibraryScreen.new,
+        prepare: () async {
+          await addPhoto(bodyPart: BodyPart.hand);
+          await container.read(libraryPhotosProvider.future);
+        },
+      );
+
+      expect(find.byType(DropdownButton<BodyPart?>), findsOneWidget);
+
+      // The grid is in its data state (no spinner), so opening the menu settles.
+      await tester.tap(find.byType(DropdownButton<BodyPart?>));
+      await tester.pumpAndSettle();
+      expect(find.text('Hand'), findsWidgets);
+      expect(find.text('Any body part'), findsWidgets);
+    });
+
     testWidgets('a thumbnail is badged with its type', (tester) async {
       late Photo photo;
       await show(
@@ -292,6 +333,48 @@ void main() {
       expect(find.text('${photo.widthPx} x ${photo.heightPx}'), findsOneWidget);
       expect(find.text(BodyPart.hand.label), findsOneWidget);
     });
+
+    testWidgets('an uncategorised photograph offers to add it to a case', (
+      tester,
+    ) async {
+      late Photo photo;
+      await show(
+        tester,
+        () => PhotoDetailScreen(photo: photo),
+        prepare: () async => photo = await detailFor(),
+      );
+
+      expect(find.text('Add to case'), findsOneWidget);
+      expect(find.text('Change case'), findsNothing);
+    });
+
+    testWidgets('a photograph attached to a case shows it (CAS-002/003)', (
+      tester,
+    ) async {
+      late Photo photo;
+      await show(
+        tester,
+        () => PhotoDetailScreen(photo: photo),
+        prepare: () async {
+          photo = await addPhoto();
+          final cases = await container.read(caseRepositoryProvider.future);
+          final record = (await cases.createCase(
+            userId: userId,
+            title: 'Left forearm follow-up',
+          )).valueOrNull!;
+          final photos = await container.read(photoRepositoryProvider.future);
+          // The path _linkCase persists through: an existing photograph gains a
+          // case after capture.
+          await photos.updatePhoto(photo.copyWith(caseId: record.id));
+          await container.read(photoDetailProvider(photo).future);
+        },
+      );
+
+      // The detail provider re-reads the row, so the attachment is reflected
+      // even though the screen was navigated with the pre-attachment object.
+      expect(find.text('Change case'), findsOneWidget);
+      expect(find.text('Left forearm follow-up'), findsOneWidget);
+    });
   });
 
   group('the export sheet', () {
@@ -342,6 +425,32 @@ void main() {
       );
 
       expect(find.text(ExportPreset.beforeAfter.label), findsOneWidget);
+    });
+
+    testWidgets('marks the active protocol preset as recommended (PRO-002)', (
+      tester,
+    ) async {
+      late Photo photo;
+      await show(
+        tester,
+        () => Scaffold(body: ExportSheet(photo: photo)),
+        prepare: () async {
+          photo = await addPhoto();
+          container
+              .read(activeProtocolProvider.notifier)
+              .state = CaptureProtocol(
+            id: 'p1',
+            name: 'Wound series',
+            settings: const ProtocolSettings(
+              exportPreset: ExportPreset.measured,
+            ),
+            createdAt: DateTime(2026),
+            updatedAt: DateTime(2026),
+          );
+        },
+      );
+
+      expect(find.text('Recommended'), findsOneWidget);
     });
   });
 

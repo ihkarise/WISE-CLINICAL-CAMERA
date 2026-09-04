@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,12 +12,20 @@ import '../../models/enums.dart';
 import '../../models/photo.dart';
 import '../../shared/constants/wise_strings.dart';
 import '../../shared/widgets/wise_empty_state.dart';
+import '../cases/cases_screen.dart';
 import '../library/photo_thumbnail.dart';
+
+/// Narrows the reference candidates to a single case, or null for all Before
+/// images (Functional MOD-002: a case is one of the reference sources).
+final referenceCaseFilterProvider = StateProvider<String?>((ref) => null);
 
 /// Before photographs available as references.
 final referenceCandidatesProvider = FutureProvider<List<Photo>>((ref) async {
   final repository = await ref.watch(photoRepositoryProvider.future);
-  return repository.getReferenceCandidates();
+  final caseId = ref.watch(referenceCaseFilterProvider);
+  return caseId == null
+      ? repository.getReferenceCandidates()
+      : repository.getPhotos(type: PhotoType.before, caseId: caseId);
 });
 
 /// Selecting the Before to reproduce (UX/UI section 16, Functional MOD-002,
@@ -41,6 +52,7 @@ class ReferencePickerScreen extends ConsumerWidget {
         ),
         data: (photos) => Column(
           children: [
+            const _CaseFilterRow(),
             Expanded(
               child: photos.isEmpty
                   ? const WiseEmptyState(
@@ -82,6 +94,61 @@ class ReferencePickerScreen extends ConsumerWidget {
   }
 }
 
+/// Choosing a case restricts the references to Before images in it
+/// (Functional MOD-002). Hidden until at least one case exists.
+class _CaseFilterRow extends ConsumerWidget {
+  const _CaseFilterRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cases = ref.watch(casesProvider);
+    final selected = ref.watch(referenceCaseFilterProvider);
+
+    return cases.maybeWhen(
+      data: (list) => list.isEmpty
+          ? const SizedBox.shrink()
+          : Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: WiseTokens.gutter,
+                vertical: WiseTokens.space8,
+              ),
+              child: Row(
+                children: [
+                  Text('Case', style: Theme.of(context).textTheme.labelMedium),
+                  const SizedBox(width: WiseTokens.space8),
+                  Expanded(
+                    child: DropdownButton<String?>(
+                      isExpanded: true,
+                      value: list.any((c) => c.id == selected)
+                          ? selected
+                          : null,
+                      hint: const Text('All cases'),
+                      items: [
+                        const DropdownMenuItem<String?>(
+                          child: Text('All cases'),
+                        ),
+                        for (final record in list)
+                          DropdownMenuItem<String?>(
+                            value: record.id,
+                            child: Text(
+                              record.displayTitle,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                      ],
+                      onChanged: (value) =>
+                          ref.read(referenceCaseFilterProvider.notifier).state =
+                              value,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
 /// Importing a reference from outside WISE (Functional section 33).
 class _ImportRow extends ConsumerStatefulWidget {
   const _ImportRow({required this.onImported});
@@ -109,6 +176,14 @@ class _ImportRowState extends ConsumerState<_ImportRow> {
                 onPressed: _busy ? null : _importFromGallery,
               ),
             ),
+            const SizedBox(width: WiseTokens.space8),
+            Expanded(
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.folder_open_outlined),
+                label: const Text('Import from File'),
+                onPressed: _busy ? null : _importFromFile,
+              ),
+            ),
           ],
         ),
       ),
@@ -130,30 +205,52 @@ class _ImportRowState extends ConsumerState<_ImportRow> {
       final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (picked == null) return;
 
-      final bytes = await picked.readAsBytes();
-      final repository = await ref.read(photoRepositoryProvider.future);
-      final user = await ref.read(currentUserProvider.future);
-
-      // The imported file is copied into WISE storage rather than referenced
-      // in place, so the reference cannot vanish when the user tidies their
-      // gallery. The source is left untouched (Functional section 33).
-      final created = await repository.createPhoto(
-        bytes: bytes,
-        type: PhotoType.before,
-        source: PhotoSource.import,
-        userId: user.id,
-      );
-
-      if (created.isFailure) {
-        _showMessage(created.failureOrNull!.userMessage);
-        return;
-      }
-
-      ref.invalidate(referenceCandidatesProvider);
-      widget.onImported(created.valueOrNull!);
+      await _importBytes(await picked.readAsBytes());
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// Importing a reference from the file system (Functional MOD-002 Files
+  /// source). Unlike the gallery, a user-mediated file picker grants access to
+  /// the chosen file only, so no photo-library permission is requested.
+  Future<void> _importFromFile() async {
+    setState(() => _busy = true);
+    try {
+      const typeGroup = XTypeGroup(
+        label: 'Images',
+        extensions: ['jpg', 'jpeg', 'png', 'heic', 'webp'],
+      );
+      final file = await openFile(acceptedTypeGroups: [typeGroup]);
+      if (file == null) return;
+
+      await _importBytes(await file.readAsBytes());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// Copies the imported bytes into WISE storage rather than referencing them
+  /// in place, so the reference cannot vanish when the user tidies the source.
+  /// The source file is left untouched (Functional section 33).
+  Future<void> _importBytes(Uint8List bytes) async {
+    final repository = await ref.read(photoRepositoryProvider.future);
+    final user = await ref.read(currentUserProvider.future);
+
+    final created = await repository.createPhoto(
+      bytes: bytes,
+      type: PhotoType.before,
+      source: PhotoSource.import,
+      userId: user.id,
+    );
+
+    if (created.isFailure) {
+      _showMessage(created.failureOrNull!.userMessage);
+      return;
+    }
+
+    ref.invalidate(referenceCandidatesProvider);
+    widget.onImported(created.valueOrNull!);
   }
 
   void _showMessage(String message) {
