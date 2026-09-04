@@ -41,10 +41,18 @@ class CaptureController extends StateNotifier<CaptureState> {
     Photo? reference,
   }) : super(CaptureState(mode: mode, reference: reference)) {
     _log = AppLogger('capture');
+    // Held rather than read at dispose time. When the whole ProviderScope is
+    // torn down the container refuses further reads, and cleanup that throws
+    // half way through leaves the alignment engine holding the reference
+    // image for the lifetime of the process.
+    _alignment = ref.read(alignmentEngineProvider);
+    _sessionOverrides = ref.read(sessionOverridesProvider.notifier);
   }
 
   final Ref ref;
   late final AppLogger _log;
+  late final AlignmentEngine _alignment;
+  late final StateController<ToolOverrides> _sessionOverrides;
 
   StreamSubscription<CameraFrame>? _frameSubscription;
   StreamSubscription<LevelReading>? _levelSubscription;
@@ -58,7 +66,6 @@ class CaptureController extends StateNotifier<CaptureState> {
   bool _analysing = false;
 
   CameraEngine get _camera => ref.read(cameraEngineProvider);
-  AlignmentEngine get _alignment => ref.read(alignmentEngineProvider);
   GuidanceEngine get _guidance => ref.read(guidanceEngineProvider);
   LightingEngine get _lighting => ref.read(lightingEngineProvider);
   FocusEngine get _focus => ref.read(focusEngineProvider);
@@ -281,15 +288,14 @@ class CaptureController extends StateNotifier<CaptureState> {
   /// Writes to the session layer, never to the database, which is what makes
   /// the override temporary (Functional SET-003, Build Specification 2.7).
   void overrideTool(WiseTool tool, {required bool enabled}) {
-    ref
-        .read(sessionOverridesProvider.notifier)
-        .update((current) => current.setting(tool, value: enabled));
+    _sessionOverrides.state = _sessionOverrides.state.setting(
+      tool,
+      value: enabled,
+    );
   }
 
   void clearOverride(WiseTool tool) {
-    ref
-        .read(sessionOverridesProvider.notifier)
-        .update((current) => current.clearing(tool));
+    _sessionOverrides.state = _sessionOverrides.state.clearing(tool);
   }
 
   // --- Metadata -------------------------------------------------------------
@@ -510,8 +516,14 @@ class CaptureController extends StateNotifier<CaptureState> {
   void dispose() {
     _frameSubscription?.cancel();
     _levelSubscription?.cancel();
-    // Session overrides never outlive the session (Functional SET-003).
-    ref.read(sessionOverridesProvider.notifier).state = ToolOverrides.none;
+    // Session overrides never outlive the session (Functional SET-003). When
+    // the whole scope is going away they die with it, so clearing is skipped
+    // rather than attempted against a disposed controller.
+    if (_sessionOverrides.mounted) {
+      _sessionOverrides.state = ToolOverrides.none;
+    }
+    // Last, and unconditional: this releases the reference image and its
+    // descriptors, which is the largest thing the session holds.
     _alignment.reset();
     super.dispose();
   }
