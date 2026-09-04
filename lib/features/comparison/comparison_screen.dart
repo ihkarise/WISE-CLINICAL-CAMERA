@@ -63,8 +63,7 @@ class _ComparisonScreenState extends ConsumerState<ComparisonScreen> {
                   value: _sliderPosition,
                   semanticFormatterCallback: (v) =>
                       '${(v * 100).round()} percent before',
-                  onChanged: (value) =>
-                      setState(() => _sliderPosition = value),
+                  onChanged: (value) => setState(() => _sliderPosition = value),
                 ),
               ),
             ),
@@ -76,8 +75,7 @@ class _ComparisonScreenState extends ConsumerState<ComparisonScreen> {
                   value: _overlayOpacity,
                   semanticFormatterCallback: (v) =>
                       '${(v * 100).round()} percent',
-                  onChanged: (value) =>
-                      setState(() => _overlayOpacity = value),
+                  onChanged: (value) => setState(() => _overlayOpacity = value),
                 ),
               ),
             ),
