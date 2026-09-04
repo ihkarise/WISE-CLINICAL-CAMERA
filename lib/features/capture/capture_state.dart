@@ -45,6 +45,7 @@ class CaptureState {
     this.laterality,
     this.caseId,
     this.protocolId,
+    this.measurementRequired = false,
   });
 
   final PhotoType mode;
@@ -69,6 +70,10 @@ class CaptureState {
   final Laterality? laterality;
   final String? caseId;
   final String? protocolId;
+
+  /// True when the active protocol expects a measurement (Functional PRO-002).
+  /// Advisory only: it never blocks capture (C-018).
+  final bool measurementRequired;
 
   bool get isAfterMode => mode == PhotoType.after;
 
@@ -98,6 +103,7 @@ class CaptureState {
     Laterality? laterality,
     String? caseId,
     String? protocolId,
+    bool? measurementRequired,
     bool clearGuidance = false,
     bool clearFailure = false,
     bool clearCapturedPhoto = false,
@@ -124,5 +130,6 @@ class CaptureState {
     laterality: clearLaterality ? null : (laterality ?? this.laterality),
     caseId: clearCase ? null : (caseId ?? this.caseId),
     protocolId: protocolId ?? this.protocolId,
+    measurementRequired: measurementRequired ?? this.measurementRequired,
   );
 }

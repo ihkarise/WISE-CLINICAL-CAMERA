@@ -10,6 +10,7 @@ import 'package:wise_clinical_camera/features/grid/grid_overlay.dart';
 import 'package:wise_clinical_camera/features/library/library_screen.dart';
 import 'package:wise_clinical_camera/features/library/photo_detail_screen.dart';
 import 'package:wise_clinical_camera/features/library/photo_thumbnail.dart';
+import 'package:wise_clinical_camera/models/capture_protocol.dart';
 import 'package:wise_clinical_camera/models/enums.dart';
 import 'package:wise_clinical_camera/models/geometry.dart';
 import 'package:wise_clinical_camera/models/measurement.dart';
@@ -424,6 +425,31 @@ void main() {
       );
 
       expect(find.text(ExportPreset.beforeAfter.label), findsOneWidget);
+    });
+
+    testWidgets('marks the active protocol preset as recommended (PRO-002)', (
+      tester,
+    ) async {
+      late Photo photo;
+      await show(
+        tester,
+        () => Scaffold(body: ExportSheet(photo: photo)),
+        prepare: () async {
+          photo = await addPhoto();
+          container.read(activeProtocolProvider.notifier).state =
+              CaptureProtocol(
+                id: 'p1',
+                name: 'Wound series',
+                settings: const ProtocolSettings(
+                  exportPreset: ExportPreset.measured,
+                ),
+                createdAt: DateTime(2026),
+                updatedAt: DateTime(2026),
+              );
+        },
+      );
+
+      expect(find.text('Recommended'), findsOneWidget);
     });
   });
 
