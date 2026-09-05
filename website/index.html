@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>WISE Clinical Camera — Standardized clinical photography</title>
+  <meta name="description" content="WISE Clinical Camera helps clinicians take the same photograph again: a ghost overlay and alignment guidance reproduce a Before reference so Before and After can be compared with confidence. Privacy-first, offline-first. By WiseAiTechs.">
+  <link rel="canonical" href="https://camera.wishomeopathy.com/">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#243E8F">
+  <meta name="color-scheme" content="light">
+  <meta name="author" content="WiseAiTechs">
+
+  <!-- Icons & manifest -->
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="assets/brand/favicon-16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="WISE Clinical Camera">
+  <meta property="og:title" content="WISE Clinical Camera — Take the same photograph again">
+  <meta property="og:description" content="Standardized clinical photography for reproducible Before & After documentation. Privacy-first, offline-first. By WiseAiTechs.">
+  <meta property="og:url" content="https://camera.wishomeopathy.com/">
+  <meta property="og:image" content="https://camera.wishomeopathy.com/assets/social/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="WISE Clinical Camera — take the same photograph again">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="WISE Clinical Camera — Take the same photograph again">
+  <meta name="twitter:description" content="Standardized clinical photography for reproducible Before & After documentation. Privacy-first, offline-first.">
+  <meta name="twitter:image" content="https://camera.wishomeopathy.com/assets/social/og-image.png">
+
+  <!-- Progressive enhancement: reveal-on-scroll only applies when JS runs, so
+       content is never hidden for no-JS users or crawlers. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="preload" href="css/styles.css" as="style">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "WISE Clinical Camera",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Android",
+    "description": "A privacy-first, offline-first clinical photography application that helps clinicians reproduce standardized photographs over time for Before and After documentation. Not a diagnostic tool.",
+    "url": "https://camera.wishomeopathy.com/",
+    "softwareVersion": "1.0.0",
+    "releaseNotes": "Preview / development build.",
+    "author": { "@type": "Organization", "name": "WiseAiTechs" },
+    "publisher": { "@type": "Organization", "name": "WiseAiTechs" },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand-lockup" href="#top" aria-label="WISE Clinical Camera home">
+        <img src="assets/brand/favicon.svg" alt="" width="34" height="34">
+        <span class="name">WISE Clinical Camera<span class="sub">WiseAiTechs</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#what">What it is</a>
+        <a href="#how">How it works</a>
+        <a href="#before-after">Before / After</a>
+        <a href="#features">Features</a>
+        <a href="#privacy">Privacy</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn btn-primary" href="#download">Download</a>
+      </div>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#what">What it is</a>
+      <a href="#how">How it works</a>
+      <a href="#before-after">Before / After</a>
+      <a href="#features">Features</a>
+      <a href="#protocols">Protocols</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#download">Download</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="hero-copy">
+          <div class="hero-badges">
+            <span class="badge"><span class="dot"></span> Privacy-first</span>
+            <span class="badge"><span class="dot"></span> Offline-first</span>
+            <span class="badge"><span class="dot"></span> For clinicians</span>
+          </div>
+          <h1 id="hero-title">WISE Clinical Camera</h1>
+          <p class="hero-promise">Take the same photograph again.</p>
+          <p class="hero-sub">Standardized clinical photography for reproducible
+            <strong>Before&nbsp;→&nbsp;After</strong> documentation. Create a Before
+            reference today; months later, WISE guides you to reproduce its position,
+            angle, scale and framing closely enough to compare with confidence.</p>
+          <div class="hero-actions">
+            <a class="btn btn-on-dark" id="cta-android" href="https://github.com/ihkarise/WISE-CLINICAL-CAMERA/releases">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 18a1 1 0 0 0 1 1h1v3.5a1.5 1.5 0 0 0 3 0V19h2v3.5a1.5 1.5 0 0 0 3 0V19h1a1 1 0 0 0 1-1V9H6v9ZM3.5 9A1.5 1.5 0 0 0 2 10.5v5a1.5 1.5 0 0 0 3 0v-5A1.5 1.5 0 0 0 3.5 9Zm17 0a1.5 1.5 0 0 0-1.5 1.5v5a1.5 1.5 0 0 0 3 0v-5A1.5 1.5 0 0 0 20.5 9Zm-3.2-6.2 1.3-1.3a.4.4 0 0 0-.56-.56l-1.48 1.48A6 6 0 0 0 12 2a6 6 0 0 0-3.86 1.4L6.66.94A.4.4 0 0 0 6.1 1.5l1.3 1.3A5.98 5.98 0 0 0 6 7.5h12a5.98 5.98 0 0 0-1.7-4.7ZM9.5 5.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Zm5 0a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"/></svg>
+              <span><span id="cta-android-label">Download for Android</span><br><small id="cta-android-note">Preview build</small></span>
+            </a>
+            <a class="btn btn-ghost-dark" id="cta-ios" href="#download" aria-disabled="false">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.42 2.2-1.12 2.98-.84.94-2.2 1.66-3.32 1.57-.14-1.1.44-2.28 1.1-3 .78-.84 2.16-1.48 3.34-1.55ZM20.6 17.2c-.6 1.36-.9 1.96-1.66 3.16-1.08 1.66-2.6 3.72-4.48 3.74-1.66.02-2.1-1.08-4.36-1.08-2.26 0-2.74 1.06-4.4 1.1-1.86.04-3.28-1.8-4.36-3.46C-.9 16.9-1.2 11.2 1.86 8.28 3.02 7.16 4.62 6.45 6.3 6.42c1.7-.03 2.72 1.1 4.36 1.1 1.62 0 2.6-1.13 4.66-1.1 1.46.02 2.94.68 3.98 1.82-3.5 1.92-2.94 6.9.3 8.16Z"/></svg>
+              <span><span id="cta-ios-label">iOS — Coming soon</span></span>
+            </a>
+            <a class="btn btn-ghost-dark" href="#how">Explore the workflow</a>
+          </div>
+          <p class="hero-meta">Version <strong id="meta-version">1.0.0</strong>
+            · <strong id="meta-channel">Preview</strong> build
+            · <span id="meta-platform">Android</span></p>
+        </div>
+        <div class="hero-visual">
+          <div class="device">
+            <img src="assets/screenshots/match.svg" width="270" height="585"
+                 alt="WISE Clinical Camera in Match mode: a saved Before shown as a translucent ghost over the live preview, with alignment guidance." fetchpriority="high">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WORKFLOW STRIP ============ -->
+    <section aria-labelledby="loop-title" style="padding-top:48px;padding-bottom:48px">
+      <div class="container">
+        <span class="section-tag">The reproducibility loop</span>
+        <h2 id="loop-title" class="sr-only">Workflow</h2>
+        <div class="flow-strip" role="list">
+          <span class="step" role="listitem"><span class="n">1</span> Match</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="step" role="listitem"><span class="n">2</span> Check</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="step" role="listitem"><span class="n">3</span> Capture</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="step" role="listitem"><span class="n">4</span> Compare</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="step" role="listitem"><span class="n">5</span> Measure</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span class="step" role="listitem"><span class="n">6</span> Export</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WHAT IT IS ============ -->
+    <section id="what" class="section-alt" aria-labelledby="what-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-tag">What is WISE Clinical Camera?</span>
+          <h2 id="what-title">A camera built around reproducible documentation</h2>
+          <p>A clinician photographs a lesion, a wound, a joint, a posture — then
+            photographs it again weeks or months later. If the second photograph was
+            taken from a different distance, angle or height, the two cannot honestly
+            be compared. WISE exists to make the second photograph match the first.</p>
+        </div>
+        <div class="grid grid-3">
+          <div class="card reveal">
+            <div class="card-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5a1 1 0 0 1 1-1h2M4 17v2a1 1 0 0 0 1 1h2m10-16h2a1 1 0 0 1 1 1v2m-3 13h2a1 1 0 0 0 1-1v-2"/><circle cx="12" cy="12" r="3.2"/></svg></div>
+            <h3>Before mode</h3>
+            <p>Create a reference and record how it was taken — camera, zoom, flash,
+              orientation, active tools, device tilt — as a reusable capture recipe.</p>
+          </div>
+          <div class="card reveal">
+            <div class="card-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3m0 12v3m9-9h-3M6 12H3m13.5-6.5-2 2m-5 5-2 2m0-9 2 2m5 5 2 2"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <h3>After mode</h3>
+            <p>Load a chosen Before as a translucent ghost over the live preview, and
+              follow guidance into position: <em>move closer, rotate slightly left</em>.</p>
+          </div>
+          <div class="card reveal">
+            <div class="card-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L19 6h0a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><circle cx="12" cy="12.5" r="3.2"/></svg></div>
+            <h3>Photo mode</h3>
+            <p>An ordinary camera for documentation that needs no reference. A clinician
+              who just wants a camera gets a camera; everything else is optional.</p>
+          </div>
+        </div>
+        <p class="lead reveal" style="margin-top:32px;max-width:70ch">
+          It is a clinical photography <strong>workflow</strong>, not a diagnostic
+          device. Nine optional tools exist; four are on by default. Its purpose is
+          photographic reproducibility — not diagnosis, and not certified measurement.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section id="how" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-tag">How it works</span>
+          <h2 id="how-title">Match → Check → Capture → Compare → Measure → Export</h2>
+          <p>Six steps take a Before reference through to a report-ready comparison.
+            Capture always stays possible — advisory warnings never block the shutter.</p>
+        </div>
+        <div class="steps">
+          <article class="step-card reveal"><div class="num">1</div><h3>Match</h3><p>A ghost overlay of the Before plus alignment guidance line the live preview up with the reference.</p></article>
+          <article class="step-card reveal"><div class="num">2</div><h3>Check</h3><p>Lighting and focus checks, advisory only. They inform the clinician; they never prevent a capture.</p></article>
+          <article class="step-card reveal"><div class="num">3</div><h3>Capture</h3><p>Take the After. Capture remains possible through every warning — the clinician stays in control.</p></article>
+          <article class="step-card reveal"><div class="num">4</div><h3>Compare</h3><p>Five ways to compare: side-by-side, slider, overlay, blink, and a visual difference view.</p></article>
+          <article class="step-card reveal"><div class="num">5</div><h3>Measure</h3><p>After calibration — and only then — measurements are shown in physical units, never before.</p></article>
+          <article class="step-card reveal"><div class="num">6</div><h3>Export</h3><p>Export the original, annotated, measured, paired, or anonymized — report-ready.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BEFORE / AFTER STORY ============ -->
+    <section id="before-after" class="section-alt" aria-labelledby="ba-title">
+      <div class="container">
+        <div class="grid grid-2" style="align-items:center;gap:40px">
+          <div class="reveal">
+            <span class="section-tag">The Before / After story</span>
+            <h2 id="ba-title">Save a Before today. Reproduce it later.</h2>
+            <p class="lead">The reference persists. A clinician can create and save a
+              Before reference, then return weeks or months later, select it, align to
+              its ghost, and capture a matching After — so the pair can be compared as
+              though the camera never moved.</p>
+            <p>Existing photographs can also be imported as a Before reference, so a
+              case that started before WISE can still get a standardized After.</p>
+            <div class="ba-flow" style="margin-top:24px" role="list">
+              <div class="ba-node" role="listitem">Before<span>Capture the reference</span></div>
+              <div class="ba-node accent" role="listitem">Save reference<span>Recipe stored</span></div>
+              <div class="ba-node" role="listitem">Return later<span>Days or months</span></div>
+              <div class="ba-node" role="listitem">Select Before<span>Pick the reference</span></div>
+              <div class="ba-node" role="listitem">Align<span>Ghost + guidance</span></div>
+              <div class="ba-node accent" role="listitem">Capture After<span>Matched frame</span></div>
+              <div class="ba-node" role="listitem">Compare<span>Slider · blink · diff</span></div>
+              <div class="ba-node" role="listitem">Export<span>Paired, anonymized</span></div>
+            </div>
+          </div>
+          <div class="reveal" style="display:flex;justify-content:center">
+            <div class="device">
+              <img src="assets/screenshots/reference.svg" width="270" height="585" loading="lazy"
+                   alt="Selecting a saved Before reference to reproduce later as an After.">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FEATURES ============ -->
+    <section id="features" aria-labelledby="features-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-tag">Feature showcase</span>
+          <h2 id="features-title">Everything a standardized capture needs — nothing it doesn't</h2>
+          <p>Grouped by the job it does. Optional tools stay off until switched on, and
+            the clinician's choices persist.</p>
+        </div>
+        <div class="grid grid-3">
+          <div class="card reveal">
+            <div class="card-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18"/></svg></div>
+            <h3>Reference &amp; alignment</h3>
+            <p>Persistent Before references, ghost overlay, reference lock and transform,
+              alignment guidance, plus grid and level for framing.</p>
+          </div>
+          <div class="card reveal">
+            <div class="card-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <h3>Capture guidance</h3>
+            <p>Lighting and focus checks and level guidance — advisory, never blocking.
+              Body-part and laterality context travels with the capture.</p>
+          </div>
+          <div class="card reveal">
+            <div class="card-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16M4 12h16M4 19h16"/><circle cx="9" cy="5" r="1.6" fill="currentColor"/><circle cx="15" cy="12" r="1.6" fill="currentColor"/><circle cx="9" cy="19" r="1.6" fill="currentColor"/></svg></div>
+            <h3>Protocols</h3>
+            <p>Built-in and user-created capture protocols bundle repeatable settings so a
+              body region is captured the same way every time.</p>
+          </div>
+          <div class="card reveal">
+            <div class="card-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"/><path d="M17.5 14v7M14 17.5h7"/></svg></div>
+            <h3>Compare</h3>
+            <p>Side-by-side, slider, overlay and blink comparison, plus a difference view
+              that shows visual change — labelled visual difference only.</p>
+          </div>
+          <div class="card reveal">
+            <div class="card-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3l7 7-9 9-7 1 1-7z"/><path d="M9 8l3 3"/></svg></div>
+            <h3>Measure &amp; annotate</h3>
+            <p>Calibrate a photograph, then measure in physical units. Annotations and
+              measurements are layers — the original is never modified.</p>
+          </div>
+          <div class="card reveal">
+            <div class="card-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
+            <h3>Export &amp; privacy</h3>
+            <p>Combined Before + After export, anonymized export, and offline, local-first
+              operation — no automatic upload to the cloud.</p>
+          </div>
+        </div>
+        <p class="note" style="color:var(--text-muted);border-left-color:var(--border);margin-top:28px">
+          Automatic calibration-marker detection is <span class="pill-tag planned">Planned</span>
+          — calibration works today by manual placement. Cloud and on-device AI ship as an
+          architecture with no provider enabled; see the philosophy section below.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ PROTOCOLS ============ -->
+    <section id="protocols" class="section-alt" aria-labelledby="protocols-title">
+      <div class="container">
+        <div class="grid grid-2" style="align-items:center;gap:40px">
+          <div class="reveal" style="display:flex;justify-content:center;order:2">
+            <div class="device">
+              <img src="assets/screenshots/home.svg" width="270" height="585" loading="lazy"
+                   alt="The WISE home screen showing the three capture modes.">
+            </div>
+          </div>
+          <div class="reveal" style="order:1">
+            <span class="section-tag">Protocols</span>
+            <h2 id="protocols-title">Repeatable capture, made routine</h2>
+            <p class="lead">A protocol is a reusable, versioned set of capture settings.
+              Apply it and the region is captured consistently — the same framing, the
+              same tools, every time.</p>
+            <ul class="check-list" style="grid-template-columns:1fr;color:var(--text)">
+              <li><span class="tick" style="background:rgba(36,62,143,.1);color:var(--wise-blue)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><span style="color:var(--text-muted)"><strong style="color:var(--text)">Built-in protocols</strong> ship with the app as sensible starting points.</span></li>
+              <li><span class="tick" style="background:rgba(36,62,143,.1);color:var(--wise-blue)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><span style="color:var(--text-muted)"><strong style="color:var(--text)">User-created protocols</strong> let a clinic capture the way it works.</span></li>
+              <li><span class="tick" style="background:rgba(36,62,143,.1);color:var(--wise-blue)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><span style="color:var(--text-muted)"><strong style="color:var(--text)">Protocol-specific settings</strong> carry into each capture automatically.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRIVACY ============ -->
+    <section id="privacy" class="privacy" aria-labelledby="privacy-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-tag">Privacy</span>
+          <h2 id="privacy-title">Clinical photographs stay on the device</h2>
+          <p class="lead">Privacy is a default, not an advanced setting. The core
+            clinical workflow makes no network request.</p>
+        </div>
+        <ul class="check-list reveal">
+          <li><span class="tick"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><div><strong>Local-first architecture</strong><span>Photographs live in application-private storage; nothing is written to the device Gallery unless the clinician asks.</span></div></li>
+          <li><span class="tick"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><div><strong>No automatic upload</strong><span>The core workflow has no network call site. On Android the app declares no internet permission at all.</span></div></li>
+          <li><span class="tick"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><div><strong>Works offline</strong><span>The complete clinical workflow runs with no connection — capture, compare, measure and export all work in airplane mode.</span></div></li>
+          <li><span class="tick"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><div><strong>Privacy Mode on by default</strong><span>A new user starts in Privacy Mode; automatic Gallery copying is downgraded to “ask”, and cloud processing is refused.</span></div></li>
+          <li><span class="tick"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><div><strong>The original is never modified</strong><span>Annotations, measurements and exports are layers or derived files — a test hashes the original before and after to prove it.</span></div></li>
+          <li><span class="tick"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg></span><div><strong>No location, no content analytics</strong><span>No GPS is collected, and logs take scalar fields only — image pixels cannot be logged.</span></div></li>
+        </ul>
+        <p class="note reveal">These describe the product's design and are documented in the
+          repository. They are engineering commitments — not a legal certification.
+          WISE does not claim HIPAA or GDPR compliance.
+          <a href="privacy.html" style="color:#fff;text-decoration:underline">Read the privacy summary →</a></p>
+      </div>
+    </section>
+
+    <!-- ============ PHILOSOPHY / AI ============ -->
+    <section id="philosophy" aria-labelledby="philo-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-tag">The WiseAiTechs philosophy</span>
+          <h2 id="philo-title">Intelligent assistance, on the clinician's terms</h2>
+          <p>WISE Clinical Camera follows the WiseAiTechs product philosophy: medical
+            trust, human-centred UX, privacy-first architecture, and reproducible,
+            measurable documentation — with AI optional rather than forced.</p>
+        </div>
+        <div class="philo-grid">
+          <div class="callout reveal">
+            <h3>Design principles</h3>
+            <p style="color:var(--text-muted)">Simple clinical workflows and professional
+              medical design. The photograph is the hero; the home screen is a camera,
+              not a dashboard. Confidence is presented as a reproducibility score — never
+              as clinical accuracy.</p>
+          </div>
+          <div class="callout ai reveal">
+            <h3><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v3m6.4 2.6-2.1 2.1M21 12h-3M6 12H3m3.6-3.4 2.1 2.1"/><circle cx="12" cy="12" r="3.2"/></svg> AI-ready, not AI-forced</h3>
+            <p style="color:var(--text-muted)">The app is built with an AI abstraction so
+              intelligent assistance can be added later — <strong>behind a feature flag,
+              off by default, and refused under Privacy Mode</strong>.</p>
+            <p style="color:var(--text-muted);margin:0"><strong>Today no AI provider ships and
+              the core runs with AI off.</strong> WISE Clinical Camera does not perform AI
+              diagnosis. Distinguishing AI-ready architecture from available AI features is
+              deliberate.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SHOWCASE ============ -->
+    <section class="section-alt" aria-labelledby="showcase-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="section-tag">App showcase</span>
+          <h2 id="showcase-title">A closer look</h2>
+          <p>Screenshots below are placeholders until the owner supplies real captures —
+            see the asset manifest to replace them.</p>
+        </div>
+        <div class="showcase-grid">
+          <figure class="shot reveal"><img src="assets/screenshots/match.svg" width="360" height="780" loading="lazy" alt="Match mode with ghost overlay and alignment guidance."><figcaption><strong>Match</strong>Ghost overlay + alignment guidance</figcaption></figure>
+          <figure class="shot reveal"><img src="assets/screenshots/compare.svg" width="360" height="780" loading="lazy" alt="Comparison view with slider and blink modes."><figcaption><strong>Compare</strong>Slider, overlay, blink &amp; difference</figcaption></figure>
+          <figure class="shot reveal"><img src="assets/screenshots/measure.svg" width="360" height="780" loading="lazy" alt="Measurement after calibration, shown in physical units."><figcaption><strong>Measure</strong>Calibrated, in physical units</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DOWNLOAD ============ -->
+    <section id="download" class="download" aria-labelledby="download-title">
+      <div class="container">
+        <div class="section-head reveal" style="margin-bottom:8px">
+          <span class="section-tag" style="color:var(--system-cyan)">Get the app</span>
+          <h2 id="download-title">Get WISE Clinical Camera</h2>
+          <p class="lead">Install the preview build and start standardizing your clinical
+            photography.</p>
+        </div>
+        <div class="channel-banner reveal" id="channel-banner">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          <span id="channel-banner-text">Preview / development build. Not a signed production store release.</span>
+        </div>
+        <div class="dl-grid">
+          <div class="dl-card reveal">
+            <h3><svg class="platform-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 18a1 1 0 0 0 1 1h1v3.5a1.5 1.5 0 0 0 3 0V19h2v3.5a1.5 1.5 0 0 0 3 0V19h1a1 1 0 0 0 1-1V9H6v9ZM3.5 9A1.5 1.5 0 0 0 2 10.5v5a1.5 1.5 0 0 0 3 0v-5A1.5 1.5 0 0 0 3.5 9Zm17 0a1.5 1.5 0 0 0-1.5 1.5v5a1.5 1.5 0 0 0 3 0v-5A1.5 1.5 0 0 0 20.5 9ZM6 7.5a5.98 5.98 0 0 1 1.4-3.8L6.1 2.4a.4.4 0 0 1 .56-.56l1.48 1.48A6 6 0 0 1 12 2a6 6 0 0 1 3.86 1.32L17.34 1.84a.4.4 0 0 1 .56.56l-1.3 1.3A5.98 5.98 0 0 1 18 7.5Z"/></svg> Android</h3>
+            <p class="status" id="android-status">Preview APK — published as a GitHub Release.</p>
+            <a class="btn btn-on-dark" id="dl-android" href="https://github.com/ihkarise/WISE-CLINICAL-CAMERA/releases">Download for Android</a>
+            <div class="dl-meta">
+              <div><strong id="dl-android-version">1.0.0</strong>Version</div>
+              <div><strong id="dl-android-channel">Preview</strong>Channel</div>
+              <div><strong id="dl-android-min">Android 8.0+</strong>Requires</div>
+            </div>
+          </div>
+          <div class="dl-card reveal">
+            <h3><svg class="platform-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.42 2.2-1.12 2.98-.84.94-2.2 1.66-3.32 1.57-.14-1.1.44-2.28 1.1-3 .78-.84 2.16-1.48 3.34-1.55ZM20.6 17.2c-.6 1.36-.9 1.96-1.66 3.16-1.08 1.66-2.6 3.72-4.48 3.74-1.66.02-2.1-1.08-4.36-1.08-2.26 0-2.74 1.06-4.4 1.1-1.86.04-3.28-1.8-4.36-3.46C-.9 16.9-1.2 11.2 1.86 8.28 3.02 7.16 4.62 6.45 6.3 6.42c1.7-.03 2.72 1.1 4.36 1.1 1.62 0 2.6-1.13 4.66-1.1 1.46.02 2.94.68 3.98 1.82-3.5 1.92-2.94 6.9.3 8.16Z"/></svg> iOS</h3>
+            <p class="status" id="ios-status">No iOS distribution link exists yet.</p>
+            <a class="btn btn-ghost-dark" id="dl-ios" href="#download" aria-disabled="true" tabindex="-1">iOS — Coming soon</a>
+            <div class="dl-meta">
+              <div><strong id="dl-ios-min">iOS 13.0+</strong>Requires</div>
+            </div>
+          </div>
+        </div>
+        <p class="note reveal" style="margin-top:28px">
+          Not seeing a download? A stable release asset may not be published yet.
+          <a id="watch-releases" href="https://github.com/ihkarise/WISE-CLINICAL-CAMERA/releases" style="color:#fff;text-decoration:underline">Watch the releases page →</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand-lockup" href="#top">
+            <img src="assets/brand/favicon.svg" alt="" width="34" height="34">
+            <span class="name">WISE Clinical Camera<span class="sub" style="color:#8ea2d6">WiseAiTechs</span></span>
+          </a>
+          <p>Standardized clinical photography for reproducible Before &amp; After
+            documentation. <strong style="color:#fff">For All Medicos.</strong></p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#what">What it is</a></li>
+            <li><a href="#how">How it works</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#download">Download</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a id="foot-github" href="https://github.com/ihkarise/WISE-CLINICAL-CAMERA">GitHub</a></li>
+            <li><a id="foot-docs" href="https://github.com/ihkarise/WISE-CLINICAL-CAMERA/tree/main/docs">Documentation</a></li>
+            <li><a id="foot-privacy" href="privacy.html">Privacy</a></li>
+            <li><a id="foot-support" href="https://github.com/ihkarise/WISE-CLINICAL-CAMERA/issues">Support</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year">2026</span> WiseAiTechs · WISE Clinical Camera</span>
+        <span class="disclaimer">WISE Clinical Camera is a clinical photography workflow, not a
+          diagnostic device. It does not provide diagnosis or certified measurement.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>

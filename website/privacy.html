@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy — WISE Clinical Camera</title>
+  <meta name="description" content="How WISE Clinical Camera handles clinical photographs: local-first, offline-first, no automatic upload. A plain-language summary of the product's privacy design.">
+  <link rel="canonical" href="https://camera.wishomeopathy.com/privacy.html">
+  <meta name="theme-color" content="#243E8F">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand-lockup" href="index.html" aria-label="WISE Clinical Camera home">
+        <img src="assets/brand/favicon.svg" alt="" width="34" height="34">
+        <span class="name">WISE Clinical Camera<span class="sub">WiseAiTechs</span></span>
+      </a>
+      <div class="nav-cta"><a class="btn btn-secondary" href="index.html">← Back to site</a></div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section style="padding-top:56px">
+      <div class="container" style="max-width:760px">
+        <span class="section-tag">Privacy summary</span>
+        <h1 style="font-size:clamp(1.8rem,1.2rem+2vw,2.6rem)">Privacy at a glance</h1>
+        <p class="lead">WISE Clinical Camera is designed so clinical photographs stay on
+          the device. This is a plain-language summary of the product's privacy design.
+          It is not a legal policy or a compliance certification.</p>
+
+        <div class="card" style="margin:24px 0">
+          <h3>What the product does</h3>
+          <ul style="color:var(--text-muted);line-height:1.8;margin:0;padding-left:20px">
+            <li><strong style="color:var(--text)">Local-first storage.</strong> Photographs live in application-private storage. Nothing is written to the device Gallery unless you ask.</li>
+            <li><strong style="color:var(--text)">No automatic upload.</strong> The core workflow makes no network request; on Android the app declares no internet permission.</li>
+            <li><strong style="color:var(--text)">Offline operation.</strong> Capture, compare, measure and export all work with no connection.</li>
+            <li><strong style="color:var(--text)">Privacy Mode on by default.</strong> Automatic Gallery copying is downgraded to “ask”, and cloud/third-party processing is refused.</li>
+            <li><strong style="color:var(--text)">Originals are never modified.</strong> Annotations, measurements and exports are layers or derived files.</li>
+            <li><strong style="color:var(--text)">No location or content analytics.</strong> No GPS is collected; logs never contain image pixels.</li>
+            <li><strong style="color:var(--text)">AI off by default.</strong> No AI provider ships; any future cloud feature would be opt-in, behind a flag, and refused under Privacy Mode.</li>
+          </ul>
+        </div>
+
+        <div class="callout">
+          <h3>Authoritative source</h3>
+          <p style="color:var(--text-muted);margin-bottom:8px">The definitive privacy and
+            network documentation lives in the project repository and is the authority for
+            these statements:</p>
+          <ul style="line-height:1.9;margin:0;padding-left:20px">
+            <li><a id="link-privacy-docs" href="https://github.com/ihkarise/WISE-CLINICAL-CAMERA/tree/main/docs/privacy">docs/privacy/ — privacy &amp; network policy</a></li>
+            <li><a id="link-repo" href="https://github.com/ihkarise/WISE-CLINICAL-CAMERA">Project repository</a></li>
+          </ul>
+        </div>
+
+        <p class="note" style="color:var(--text-muted);border-left-color:var(--border);margin-top:28px">
+          <strong style="color:var(--text)">Placeholder notice.</strong> This is a product
+          privacy summary, not a formal legal privacy policy. A formal policy, and any
+          compliance statements, should be added here by the owner before public release.
+          WISE does not currently claim HIPAA or GDPR compliance.</p>
+
+        <p style="margin-top:32px"><a class="btn btn-primary" href="index.html">← Back to WISE Clinical Camera</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="margin-top:0;border-top:none">
+        <span>© <span id="year">2026</span> WiseAiTechs · WISE Clinical Camera</span>
+        <span class="disclaimer">A clinical photography workflow, not a diagnostic device.</span>
+      </div>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    fetch('config/site.json').then(function(r){return r.ok?r.json():null;}).then(function(s){
+      if(!s||!s.urls)return;
+      var m={'link-privacy-docs':s.urls.privacySource,'link-repo':s.urls.repo};
+      Object.keys(m).forEach(function(id){var e=document.getElementById(id);if(e&&m[id])e.href=m[id];});
+    }).catch(function(){});
+  </script>
+</body>
+</html>

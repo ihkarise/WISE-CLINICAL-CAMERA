@@ -1,0 +1,5 @@
+# WISE Clinical Camera — https://camera.wishomeopathy.com
+User-agent: *
+Allow: /
+
+Sitemap: https://camera.wishomeopathy.com/sitemap.xml
