@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="App poster placeholder">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#101828"/><stop offset="1" stop-color="#243E8F"/></linearGradient></defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <g transform="translate(480.0,500.0) scale(7.5)" opacity="0.18"><g transform="translate(-50,-50)"><circle cx="50" cy="50" r="30" fill="#F8FAFC"/><polygon points="50,34.4 63.51,42.2 63.51,57.8 50,65.6 36.49,57.8 36.49,42.2" fill="#101828"/><g stroke="#101828" stroke-width="3.3" stroke-linecap="round"><line x1="50" y1="34.4" x2="67.11" y2="24.63"/><line x1="63.51" y1="42.2" x2="80.53" y2="52.13"/><line x1="63.51" y1="57.8" x2="63.41" y2="77.5"/><line x1="50" y1="65.6" x2="32.89" y2="75.37"/><line x1="36.49" y1="57.8" x2="19.47" y2="47.87"/><line x1="36.49" y1="42.2" x2="36.59" y2="22.5"/></g></g></g>
+  <text x="800.0" y="520.0" text-anchor="middle" fill="#F8FAFC" font-family="Segoe UI, Roboto, sans-serif" font-size="58" font-weight="700">WISE Clinical Camera</text>
+  <text x="800.0" y="600.0" text-anchor="middle" fill="#C7D2E5" font-family="Segoe UI, Roboto, sans-serif" font-size="34" font-weight="500">App poster placeholder</text>
+  <text x="800.0" y="900.0" text-anchor="middle" fill="#94A3B8" font-family="Segoe UI, Roboto, sans-serif" font-size="26" font-weight="600" letter-spacing="2">PLACEHOLDER — REPLACE WITH THE OFFICIAL POSTER</text>
+</svg>

@@ -1,0 +1,26 @@
+{
+  "$comment": "Machine-readable asset manifest. Kept in step with ASSET_MANIFEST.md. tool/validate_website.py reads this list and fails if any 'path' does not exist. Add a new asset here when you add one to the page.",
+  "brand": [
+    { "path": "assets/brand/favicon.svg", "type": "image/svg+xml", "shared": true, "generated": false },
+    { "path": "assets/brand/apple-touch-icon.png", "w": 180, "h": 180, "type": "image/png", "shared": true, "generated": true },
+    { "path": "assets/brand/favicon-32.png", "w": 32, "h": 32, "type": "image/png", "shared": true, "generated": true },
+    { "path": "assets/brand/favicon-16.png", "w": 16, "h": 16, "type": "image/png", "shared": true, "generated": true },
+    { "path": "assets/icons/icon-192.png", "w": 192, "h": 192, "type": "image/png", "shared": true, "generated": true },
+    { "path": "assets/icons/icon-512.png", "w": 512, "h": 512, "type": "image/png", "shared": true, "generated": true },
+    { "path": "assets/icons/icon-maskable-512.png", "w": 512, "h": 512, "type": "image/png", "shared": true, "generated": true },
+    { "path": "assets/social/og-image.png", "w": 1200, "h": 630, "type": "image/png", "shared": false, "generated": true }
+  ],
+  "screenshots": [
+    { "path": "assets/screenshots/home.svg", "step": "Home", "placeholder": true },
+    { "path": "assets/screenshots/match.svg", "step": "Match", "placeholder": true },
+    { "path": "assets/screenshots/check.svg", "step": "Check", "placeholder": true },
+    { "path": "assets/screenshots/capture.svg", "step": "Capture", "placeholder": true },
+    { "path": "assets/screenshots/compare.svg", "step": "Compare", "placeholder": true },
+    { "path": "assets/screenshots/measure.svg", "step": "Measure", "placeholder": true },
+    { "path": "assets/screenshots/export.svg", "step": "Export", "placeholder": true },
+    { "path": "assets/screenshots/reference.svg", "step": "Save Before", "placeholder": true }
+  ],
+  "posters": [
+    { "path": "assets/posters/app-poster.svg", "placeholder": true }
+  ]
+}

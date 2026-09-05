@@ -1,0 +1,23 @@
+{
+  "$comment": "THE ONE PLACE to update download links and version. Non-developers: edit this file only. Set an platform's \"available\" to true and fill \"url\" when a real, stable download exists (a published GitHub Release asset, or a real App Store / TestFlight link). Never invent a URL. After editing, keep it valid JSON and run tool/validate_website.py.",
+  "version": "1.0.0",
+  "channel": "Preview",
+  "channelNote": "Preview / development build. Not a signed production store release.",
+  "releaseDate": "",
+  "releasesUrl": "https://github.com/ihkarise/WISE-CLINICAL-CAMERA/releases",
+  "android": {
+    "available": false,
+    "url": "",
+    "label": "Download for Android",
+    "fileType": "APK",
+    "minVersion": "Android 8.0 (API 26) or later",
+    "note": "A preview APK will be published as a GitHub Release. Until then this button links to the releases page."
+  },
+  "ios": {
+    "available": false,
+    "url": "",
+    "label": "Download on the App Store",
+    "minVersion": "iOS 13.0 or later",
+    "note": "No iOS distribution link exists yet."
+  }
+}

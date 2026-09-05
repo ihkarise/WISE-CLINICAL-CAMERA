@@ -1,0 +1,58 @@
+# Deploy the WISE Clinical Camera website to GitHub Pages.
+#
+# The site is a static folder (website/). This workflow uploads *only* that
+# folder as the Pages artifact and deploys it, so the Flutter application and
+# the repository docs are never published, and the source of truth stays in
+# website/ on the default branch (no gh-pages branch to keep in sync).
+#
+# One-time repository setting: Settings → Pages → "Build and deployment" →
+# Source: "GitHub Actions". See docs/WEBSITE_DEPLOYMENT.md.
+name: Deploy website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "website/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; a newer push supersedes an in-flight run.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate website
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate website (assets, links, metadata, config)
+        run: python3 tool/validate_website.py
+
+  deploy:
+    name: Build and deploy
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Upload website artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

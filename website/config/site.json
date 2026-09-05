@@ -1,0 +1,26 @@
+{
+  "$comment": "Canonical site configuration for the WISE Clinical Camera website. Non-developers: this is one of two files you edit. This file owns URLs, branding text and social links. Download links and version live in downloads.json. After editing, keep it valid JSON (commas, quotes) and run tool/validate_website.py.",
+  "brand": {
+    "product": "WISE Clinical Camera",
+    "company": "WiseAiTechs",
+    "tagline": "For All Medicos",
+    "promise": "Take the same photograph again."
+  },
+  "domain": "camera.wishomeopathy.com",
+  "canonicalUrl": "https://camera.wishomeopathy.com/",
+  "urls": {
+    "repo": "https://github.com/ihkarise/WISE-CLINICAL-CAMERA",
+    "releases": "https://github.com/ihkarise/WISE-CLINICAL-CAMERA/releases",
+    "issues": "https://github.com/ihkarise/WISE-CLINICAL-CAMERA/issues",
+    "documentation": "https://github.com/ihkarise/WISE-CLINICAL-CAMERA/tree/main/docs",
+    "privacy": "privacy.html",
+    "privacySource": "https://github.com/ihkarise/WISE-CLINICAL-CAMERA/tree/main/docs/privacy",
+    "support": "https://github.com/ihkarise/WISE-CLINICAL-CAMERA/issues"
+  },
+  "social": {
+    "$comment": "Add real profile URLs here when they exist. Empty strings are hidden on the page. Do not invent URLs.",
+    "twitter": "",
+    "linkedin": "",
+    "youtube": ""
+  }
+}
