@@ -5,6 +5,7 @@ import '../../app/routes.dart';
 import '../../app/theme/wise_tokens.dart';
 import '../../models/enums.dart';
 import '../../shared/constants/wise_strings.dart';
+import '../../shared/widgets/wise_logo.dart';
 import '../../shared/widgets/wise_mode_card.dart';
 import '../library/recent_photos_strip.dart';
 
@@ -54,6 +55,34 @@ class HomeScreen extends ConsumerWidget {
             vertical: WiseTokens.space16,
           ),
           children: [
+            // Brand identity: the WISE mark, the WiseAiTechs byline and the
+            // product tagline (master prompt §8, UX/UI section 6).
+            Row(
+              children: [
+                const WiseLogo(size: 48),
+                const SizedBox(width: WiseTokens.space16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        WiseStrings.brandByline,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: WiseTokens.wiseBlue,
+                        ),
+                      ),
+                      const SizedBox(height: WiseTokens.space4),
+                      Text(
+                        WiseStrings.tagline,
+                        style: theme.textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: WiseTokens.space24),
+
             Text(WiseStrings.modePrompt, style: theme.textTheme.titleLarge),
             const SizedBox(height: WiseTokens.space16),
 

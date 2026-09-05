@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/providers.dart';
+import '../../app/routes.dart';
 import '../../app/theme/wise_tokens.dart';
 import '../../core/imaging/metadata_anonymizer.dart';
 import '../../models/enums.dart';
@@ -39,6 +40,22 @@ class SettingsScreen extends ConsumerWidget {
                 preferences: current,
                 capabilities: capabilities,
               ),
+
+            const Divider(),
+            _SectionHeader(title: 'Capture'),
+            ListTile(
+              leading: const Icon(
+                Icons.checklist_outlined,
+                color: WiseTokens.wiseBlue,
+              ),
+              title: const Text('Protocols'),
+              subtitle: const Text(
+                'Create, edit and manage reusable capture configurations.',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () =>
+                  Navigator.of(context).pushNamed(WiseRoutes.protocols),
+            ),
 
             const Divider(),
             _SectionHeader(title: 'Measurement'),

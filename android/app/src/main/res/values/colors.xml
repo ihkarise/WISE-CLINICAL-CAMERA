@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Deep Navy (UX/UI 2.2, lib/app/theme/wise_tokens.dart). The startup
+         window background, so the splash reads as WISE before Flutter draws. -->
+    <color name="wise_navy">#FF101828</color>
+</resources>

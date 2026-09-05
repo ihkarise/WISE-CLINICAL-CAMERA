@@ -233,7 +233,22 @@ class _ImportRowState extends ConsumerState<_ImportRow> {
   /// Copies the imported bytes into WISE storage rather than referencing them
   /// in place, so the reference cannot vanish when the user tidies the source.
   /// The source file is left untouched (Functional section 33).
+  ///
+  /// An imported image carries no WISE metadata, so the clinician is offered the
+  /// chance to supply body part, laterality and a case before it is saved as a
+  /// reusable BEFORE reference (Functional MOD-002, master prompt §4). All of it
+  /// stays optional: dismissing the sheet aborts, but saving with nothing filled
+  /// in is allowed.
   Future<void> _importBytes(Uint8List bytes) async {
+    if (!mounted) return;
+    final metadata = await showModalBottomSheet<_ImportMetadata>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const _ImportReferenceSheet(),
+    );
+    // A dismissed sheet aborts the import; the source file is untouched.
+    if (metadata == null || !mounted) return;
+
     final repository = await ref.read(photoRepositoryProvider.future);
     final user = await ref.read(currentUserProvider.future);
 
@@ -242,6 +257,9 @@ class _ImportRowState extends ConsumerState<_ImportRow> {
       type: PhotoType.before,
       source: PhotoSource.import,
       userId: user.id,
+      caseId: metadata.caseId,
+      bodyPart: metadata.bodyPart,
+      laterality: metadata.laterality,
     );
 
     if (created.isFailure) {
@@ -259,4 +277,165 @@ class _ImportRowState extends ConsumerState<_ImportRow> {
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
   }
+}
+
+/// The optional metadata supplied for an imported reference.
+class _ImportMetadata {
+  const _ImportMetadata({this.bodyPart, this.laterality, this.caseId});
+
+  final BodyPart? bodyPart;
+  final Laterality? laterality;
+  final String? caseId;
+}
+
+/// Collects the minimum metadata for an imported reference before it is saved
+/// (Functional MOD-002, master prompt §4).
+///
+/// Everything is optional: the image is saved as a reusable BEFORE either way,
+/// and the imported original is never modified.
+class _ImportReferenceSheet extends ConsumerStatefulWidget {
+  const _ImportReferenceSheet();
+
+  @override
+  ConsumerState<_ImportReferenceSheet> createState() =>
+      _ImportReferenceSheetState();
+}
+
+class _ImportReferenceSheetState extends ConsumerState<_ImportReferenceSheet> {
+  BodyPart? _bodyPart;
+  Laterality? _laterality;
+  String? _caseId;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cases = ref.watch(casesProvider);
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(WiseTokens.space16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Save as reference', style: theme.textTheme.titleMedium),
+            const SizedBox(height: WiseTokens.space4),
+            Text(
+              'An imported image has no WISE details. Add what you know — all '
+              'optional. The original is kept unchanged.',
+              style: theme.textTheme.labelSmall,
+            ),
+            const SizedBox(height: WiseTokens.space16),
+
+            _Field(
+              label: 'Body part',
+              child: DropdownButton<BodyPart?>(
+                value: _bodyPart,
+                isExpanded: true,
+                hint: const Text('Not recorded'),
+                items: [
+                  const DropdownMenuItem<BodyPart?>(
+                    child: Text('Not recorded'),
+                  ),
+                  for (final part in BodyPart.values)
+                    DropdownMenuItem<BodyPart?>(
+                      value: part,
+                      child: Text(part.label),
+                    ),
+                ],
+                onChanged: (value) => setState(() => _bodyPart = value),
+              ),
+            ),
+            const SizedBox(height: WiseTokens.space16),
+
+            _Field(
+              label: 'Side',
+              child: DropdownButton<Laterality?>(
+                value: _laterality,
+                isExpanded: true,
+                hint: const Text('Not recorded'),
+                items: [
+                  const DropdownMenuItem<Laterality?>(
+                    child: Text('Not recorded'),
+                  ),
+                  for (final side in Laterality.values)
+                    DropdownMenuItem<Laterality?>(
+                      value: side,
+                      child: Text(side.label),
+                    ),
+                ],
+                onChanged: (value) => setState(() => _laterality = value),
+              ),
+            ),
+            const SizedBox(height: WiseTokens.space16),
+
+            _Field(
+              label: 'Case',
+              child: cases.when(
+                loading: () => const LinearProgressIndicator(),
+                error: (_, _) => Text(
+                  'Cases could not be loaded.',
+                  style: theme.textTheme.labelSmall,
+                ),
+                data: (list) => DropdownButton<String?>(
+                  value: list.any((c) => c.id == _caseId) ? _caseId : null,
+                  isExpanded: true,
+                  hint: const Text('No case'),
+                  items: [
+                    const DropdownMenuItem<String?>(child: Text('No case')),
+                    for (final record in list)
+                      DropdownMenuItem<String?>(
+                        value: record.id,
+                        child: Text(
+                          record.displayTitle,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => _caseId = value),
+                ),
+              ),
+            ),
+            const SizedBox(height: WiseTokens.space24),
+
+            Row(
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                const Spacer(),
+                FilledButton(
+                  onPressed: () => Navigator.of(context).pop(
+                    _ImportMetadata(
+                      bodyPart: _bodyPart,
+                      laterality: _laterality,
+                      caseId: _caseId,
+                    ),
+                  ),
+                  child: const Text('Save reference'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Field extends StatelessWidget {
+  const _Field({required this.label, required this.child});
+
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label, style: Theme.of(context).textTheme.labelMedium),
+      child,
+    ],
+  );
 }

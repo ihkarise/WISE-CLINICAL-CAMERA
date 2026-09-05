@@ -209,6 +209,11 @@ class ProtocolRepository {
   ///
   /// Always bumps the version so photographs captured under the previous
   /// version stay unambiguously attributable to it.
+  ///
+  /// A built-in (system) protocol is immutable: an edit is refused rather than
+  /// applied, so the shipped configurations can never be altered by accident
+  /// (Functional PRO-001, master prompt §7). To change one, duplicate it first
+  /// and edit the copy.
   Future<Result<CaptureProtocol>> updateProtocol(
     CaptureProtocol protocol, {
     String? name,
@@ -217,6 +222,13 @@ class ProtocolRepository {
     bool? isActive,
     DateTime? now,
   }) async {
+    if (protocol.isSystem) {
+      return const Result.failed(
+        ValidationFailure(
+          'Built-in protocols cannot be edited. Duplicate it to make changes.',
+        ),
+      );
+    }
     final edited = protocol.edited(
       name: name,
       description: description,
@@ -247,7 +259,17 @@ class ProtocolRepository {
     now: now,
   );
 
+  /// Retires a user-created protocol (soft delete).
+  ///
+  /// A built-in (system) protocol is protected: deletion is refused so a
+  /// shipped configuration cannot be removed by accident (master prompt §7).
   Future<Result<void>> deleteProtocol(String id, {DateTime? now}) async {
+    final existing = await getProtocol(id);
+    if (existing != null && existing.isSystem) {
+      return const Result.failed(
+        ValidationFailure('Built-in protocols cannot be deleted.'),
+      );
+    }
     final timestamp = (now ?? DateTime.now()).millisecondsSinceEpoch;
     return _db.transaction((txn) async {
       await txn.update(
